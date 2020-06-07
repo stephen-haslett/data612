@@ -15,8 +15,24 @@ library(kableExtra)
 
 #### Load the ratings data into a dataframe.
 ```{r, warning=FALSE, message=FALSE}
-movie_ratings_data <- read.csv('https://raw.githubusercontent.com/stephen-haslett/data612/master/movie_ratings.csv', header = TRUE, sep = ',', stringsAsFactors = FALSE)
-colnames(movie_ratings_data) <- gsub('User', ' ', colnames(movie_ratings_data), fixed = TRUE)
+csv_file <- 'https://raw.githubusercontent.com/stephen-haslett/data612/612-project-1/movie_ratings.csv'
+movie_ratings_data <- read.csv(csv_file, header = TRUE, sep = ',', stringsAsFactors = FALSE)
 colnames(movie_ratings_data) <- gsub('.', ' ', colnames(movie_ratings_data), fixed = TRUE)
+movie_ratings_data %>% kable(caption = 'Movie Ratings') %>% kable_styling('striped', full_width = TRUE)
+```
 
+
+### Create a user-item matrix.
+```{r, warning=FALSE, message=FALSE}
+rownames(movie_ratings_data) <- movie_ratings_data$Viewers
+ratings <- select(movie_ratings_data, 2:7)
+user_item_matrix <- data.matrix(ratings)
+user_item_matrix %>% kable(caption = 'Movie Ratings') %>% kable_styling('striped', full_width = TRUE)
+```
+
+
+
+
+#### Break your ratings into separate training and test datasets.
+```{r, warning=FALSE, message=FALSE}
 ```
