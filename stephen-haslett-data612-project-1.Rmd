@@ -35,4 +35,15 @@ user_item_matrix %>% kable(caption = 'Movie Ratings') %>% kable_styling('striped
 
 #### Break your ratings into separate training and test datasets.
 ```{r, warning=FALSE, message=FALSE}
+sample <- sample.int(n = nrow(user_item_matrix), size = floor(0.7 * nrow(user_item_matrix)), replace = FALSE)
+train_data <- user_item_matrix[sample, ]
+test_data  <- user_item_matrix[-sample, ]
+
+train_data %>% kable(caption = 'Training Data') %>% kable_styling('striped', full_width = TRUE)
+test_data %>% kable(caption = 'Test Data') %>% kable_styling('striped', full_width = TRUE)
 ```
+
+
+
+
+
