@@ -31,8 +31,6 @@ user_item_matrix %>% kable(caption = 'Movie Ratings') %>% kable_styling('striped
 ```
 
 
-
-
 #### Break your ratings into separate training and test datasets.
 ```{r, warning=FALSE, message=FALSE}
 sample <- sample.int(n = nrow(user_item_matrix), size = floor(0.7 * nrow(user_item_matrix)), replace = FALSE)
@@ -42,6 +40,47 @@ test_data  <- user_item_matrix[-sample, ]
 train_data %>% kable(caption = 'Training Data') %>% kable_styling('striped', full_width = TRUE)
 test_data %>% kable(caption = 'Test Data') %>% kable_styling('striped', full_width = TRUE)
 ```
+
+
+#### Using your training data, calculate the raw average (mean) rating for every user-item combination.
+```{r, warning=FALSE, message=FALSE}
+training_average_mean<-mean(as.numeric(as.matrix(train_data)), na.rm=TRUE)
+training_average_mean
+```
+
+
+#### Calculate the RMSE for raw average for both your training data and your test data.
+```{r, warning=FALSE, message=FALSE}
+training_error <- train_data - training_average_mean
+training_error %>% kable(caption = 'Training Data Error') %>% kable_styling('striped', full_width = TRUE)
+```
+
+
+#### Training data RMSE.
+```{r, warning=FALSE, message=FALSE}
+training_rmse <- sqrt(mean((training_error ^ 2),na.rm = TRUE))
+training_rmse
+```
+
+
+```{r, warning=FALSE, message=FALSE}
+test_error <- test_data - training_average_mean
+test_error %>% kable(caption = 'Test Data Error') %>% kable_styling('striped', full_width = TRUE)
+```
+
+
+#### Test data RMSE.
+```{r, warning=FALSE, message=FALSE}
+test_rmse <- sqrt(mean((test_error ^ 2),na.rm = TRUE))
+test_rmse
+```
+
+
+#### Using your training data, calculate the bias for each user and each item.
+```{r, warning=FALSE, message=FALSE}
+
+```
+
 
 
 
