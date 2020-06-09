@@ -78,13 +78,13 @@ test_rmse
 
 #### Using your training data, calculate the bias for each user and each item.
 ```{r, warning=FALSE, message=FALSE}
-user_bias <- rowMeans(user_item_matrix, na.rm = TRUE) - training_average_mean
+user_bias <- rowMeans(train_data, na.rm = TRUE) - training_average_mean
 user_bias %>% kable(caption = 'User Bias') %>% kable_styling("striped", full_width = TRUE)
 ```
 
 
 ```{r, warning=FALSE, message=FALSE}
-item_bias <- colMeans(user_item_matrix, na.rm = TRUE) - training_average_mean
+item_bias <- colMeans(train_data, na.rm = TRUE) - training_average_mean
 item_bias %>% kable(caption = 'Item Bias') %>% kable_styling("striped", full_width = TRUE)
 ```
 
@@ -98,11 +98,11 @@ for (i in 1:length(user_bias)){
   base[i, ] <- row
 }
 
-base[base > 6] <- 6
+base[base > 5] <- 5
 
 dim(movie_ratings_data)
 rownames(base) <- rownames(user_item_matrix)
-colnames(base) <- colnames(na.omit(user_item_matrix))
+colnames(base) <- colnames(user_item_matrix)
 kable(round(base, 2))
 ```
 
