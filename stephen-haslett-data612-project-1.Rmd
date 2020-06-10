@@ -7,105 +7,122 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-
+library(caTools)
 library(tidyverse)
 library(kableExtra)
 ```
 
 
-#### Load the ratings data into a dataframe.
+## Load the ratings data into a dataframe.
 ```{r, warning=FALSE, message=FALSE}
 csv_file <- 'https://raw.githubusercontent.com/stephen-haslett/data612/612-project-1/movie_ratings.csv'
 movie_ratings_data <- read.csv(csv_file, header = TRUE, sep = ',', stringsAsFactors = FALSE)
+
+# Replace period spacers in movie names with spaces to make them more readable.
 colnames(movie_ratings_data) <- gsub('.', ' ', colnames(movie_ratings_data), fixed = TRUE)
+
+# Set the row name values to the Viewers' column values, then remove the Viewers column as it is no longer needed.
+rownames(movie_ratings_data) <- movie_ratings_data$Viewers
+movie_ratings_data$Viewers = NULL
+
 movie_ratings_data %>% kable(caption = 'Movie Ratings') %>% kable_styling('striped', full_width = TRUE)
 ```
 
 
-### Create a user-item matrix.
-```{r, warning=FALSE, message=FALSE}
-rownames(movie_ratings_data) <- movie_ratings_data$Viewers
-ratings <- select(movie_ratings_data, 2:7)
-user_item_matrix <- data.matrix(ratings)
-user_item_matrix %>% kable(caption = 'Movie Ratings') %>% kable_styling('striped', full_width = TRUE)
-```
+## Break your ratings into separate training and test datasets.
 
-
-#### Break your ratings into separate training and test datasets.
+### Split the data 50/50 (1/2 training data, 1/2 test data)
 ```{r, warning=FALSE, message=FALSE}
-sample <- sample.int(n = nrow(user_item_matrix), size = floor(0.7 * nrow(user_item_matrix)), replace = FALSE)
-train_data <- user_item_matrix[sample, ]
-test_data  <- user_item_matrix[-sample, ]
+sample <- sample.split(movie_ratings_data, SplitRatio = 0.5)
+train_data <- subset(movie_ratings_data, sample == TRUE)
+test_data <- subset(movie_ratings_data, sample == FALSE)
 
 train_data %>% kable(caption = 'Training Data') %>% kable_styling('striped', full_width = TRUE)
 test_data %>% kable(caption = 'Test Data') %>% kable_styling('striped', full_width = TRUE)
 ```
 
 
-#### Using your training data, calculate the raw average (mean) rating for every user-item combination.
+
+## Using your training data, calculate the raw average (mean) rating for every user-item combination.
+
+### User Averages
 ```{r, warning=FALSE, message=FALSE}
-training_average_mean<-mean(as.numeric(as.matrix(train_data)), na.rm = TRUE)
-training_average_mean
+user_average <- rowMeans(train_data, na.rm = TRUE)
+user_average_dframe <- as.data.frame(user_average)
+user_average_dframe %>% kable(caption = 'User Averages') %>% kable_styling('striped', full_width = TRUE)
 ```
 
 
-#### Calculate the RMSE for raw average for both your training data and your test data.
+
+### Item Averages
 ```{r, warning=FALSE, message=FALSE}
-training_error <- train_data - training_average_mean
-training_error %>% kable(caption = 'Training Data Error') %>% kable_styling('striped', full_width = TRUE)
+item_average <-  colMeans(train_data, na.rm = TRUE)
+item_average_dframe <- as.data.frame(item_average)
+item_average_dframe %>% kable(caption = 'Item Averages') %>% kable_styling('striped', full_width = TRUE)
+```
+
+## Calculate the RMSE for raw average for both your training data and your test data.
+
+### Training Data Mean
+```{r, warning=FALSE, message=FALSE}
+training_matrix <- as.matrix(train_data)
+training_data_mean <- mean(training_matrix, na.rm = TRUE)
+training_data_mean
 ```
 
 
-#### Training data RMSE.
+### Training Data RMSE
 ```{r, warning=FALSE, message=FALSE}
-training_rmse <- sqrt(mean((training_error ^ 2), na.rm = TRUE))
-training_rmse
+training_data_rmse <- sqrt(mean(as.matrix((train_data - training_data_mean) ^2), na.rm = TRUE))
+training_data_rmse
 ```
 
 
+### Test Data Mean
 ```{r, warning=FALSE, message=FALSE}
-test_error <- test_data - training_average_mean
-test_error %>% kable(caption = 'Test Data Error') %>% kable_styling('striped', full_width = TRUE)
+test_matrix <- as.matrix(test_data)
+test_data_mean <-mean(test_matrix, na.rm = TRUE)
+test_data_mean
 ```
 
 
-#### Test data RMSE.
+### Test Data RMSE
 ```{r, warning=FALSE, message=FALSE}
-test_rmse <- sqrt(mean((test_error ^ 2), na.rm = TRUE))
-test_rmse
+test_data_rmse <- sqrt(mean(as.matrix((test_data - test_data_mean) ^2), na.rm = TRUE))
+test_data_rmse
 ```
 
 
-#### Using your training data, calculate the bias for each user and each item.
+## Using your training data, calculate the bias for each user and each item.
+
+### User Bias
 ```{r, warning=FALSE, message=FALSE}
-user_bias <- rowMeans(train_data, na.rm = TRUE) - training_average_mean
+user_bias <- user_average_dframe - training_data_mean
 user_bias %>% kable(caption = 'User Bias') %>% kable_styling("striped", full_width = TRUE)
 ```
 
 
+### Item Bias
 ```{r, warning=FALSE, message=FALSE}
-item_bias <- colMeans(train_data, na.rm = TRUE) - training_average_mean
+item_bias <- item_average_dframe - training_data_mean
 item_bias %>% kable(caption = 'Item Bias') %>% kable_styling("striped", full_width = TRUE)
 ```
 
 
-#### From the raw average, and the appropriate user and item biases, calculate the baseline predictors 
+## From the raw average, and the appropriate user and item biases, calculate the baseline predictors
 for every user-item combination.
 ```{r, warning=FALSE, message=FALSE}
-base <- as.data.frame(matrix(nrow = 10, ncol = 6))
-for (i in 1:length(user_bias)){
-  row <- c(user_bias + item_bias[i] + training_average_mean)
-  base[i, ] <- row
+baseline <- data.frame()
+
+for (count in 1:nrow(user_bias)){
+  result <- c(training_data_mean + user_bias[count, 1] + item_bias[1])
+  result <- result[[1]]
+  result[result < 1] <- 1.00
+  result[result > 5] <- 5.00
+  baseline <- rbind(baseline, result)
 }
 
-base[base > 5] <- 5
-
-dim(movie_ratings_data)
-rownames(base) <- rownames(user_item_matrix)
-colnames(base) <- colnames(user_item_matrix)
-kable(round(base, 2))
+colnames(baseline) <- colnames(movie_ratings_data)
+rownames(baseline) <- rownames(user_bias)
+baseline  %>% kable(caption = 'Baseline Predictors') %>% kable_styling("striped", full_width = TRUE)
 ```
-
-
-
-
