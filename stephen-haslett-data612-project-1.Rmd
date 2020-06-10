@@ -109,8 +109,7 @@ item_bias %>% kable(caption = 'Item Bias') %>% kable_styling("striped", full_wid
 ```
 
 
-## From the raw average, and the appropriate user and item biases, calculate the baseline predictors
-for every user-item combination.
+## From the raw average, and the appropriate user and item biases, calculate the baseline predictors for every user-item combination.
 ```{r, warning=FALSE, message=FALSE}
 baseline <- data.frame()
 
@@ -126,3 +125,20 @@ colnames(baseline) <- colnames(movie_ratings_data)
 rownames(baseline) <- rownames(user_bias)
 baseline  %>% kable(caption = 'Baseline Predictors') %>% kable_styling("striped", full_width = TRUE)
 ```
+
+
+## Calculate the RMSE for the baseline predictors for both your training data and your test data.
+
+### Training Baseline Predictors RMSE
+```{r, warning=FALSE, message=FALSE}
+training_baseline_rmse <- sqrt(mean((as.matrix(train_data - baseline)) ^2, na.rm = TRUE))
+training_baseline_rmse
+```
+
+
+### Testing Baseline Predictors RMSE
+```{r, warning=FALSE, message=FALSE}
+test_baseline_rmse <- sqrt(mean((as.matrix(test_data - baseline)) ^2, na.rm = TRUE))
+test_baseline_rmse
+```
+
