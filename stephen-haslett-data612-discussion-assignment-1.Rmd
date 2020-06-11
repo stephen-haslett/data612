@@ -11,10 +11,24 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Research Question
 choose one commercial recommender and describe how you think it works (content-based, collaborative filtering, etc). Does the technique deliver a good experience or are the recommendations off-target?
 
-## The Netflix Recomender System
-### System Overview
-Over 80% of the content people watch on Netflix is discovered through the service's recommender system, making the system an integral part of the service.
+## The Netflix Recommender System
+Over 80% of the content people watch on Netflix is discovered through the service's recommender system, making the system an integral part of the service. The system utilizes five main algorithms to recommend content to users:
+
+#### 1. The Personalised Video Ranker (PVR) Algorithm
+This algorithm categorizes and orders content into rows based on an individual user's viewing history. So for example, if a viewer regularly watches comedy and romance movies, then the system will add a comedy and romance row to the user's profile page containing recommended content for these genres.    
+
+#### 2. The Top N Video Ranker Algorithm
+The Top N Video Ranker algorithm is responsible for creating and populating the Top Picks row on a user's profile. This algorithm searches the entire content catalog for top ranking personalized recommendations for a particular user, and adds them to the Top Picks row. 
+
+#### 3. The Trending Now Algorithm
+
+#### 4. The Continue Watching Algorithm
+
+#### 5. The Video-Video Similarity Algorithm
+This algorithm is responsible for creating and populating the "Because You Watched" rows on a user's profile.
+
+### Does the technique deliver a good experience or are the recommendations off-target?
 
 
-## Attacks on Recommender System
+## Attacks on Recommender Systems
 
