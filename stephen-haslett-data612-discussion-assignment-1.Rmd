@@ -1,0 +1,20 @@
+---
+title: "Research Discussion Assignment One"
+author: "Stephen Haslett"
+date: "6/10/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+## Research Question
+choose one commercial recommender and describe how you think it works (content-based, collaborative filtering, etc). Does the technique deliver a good experience or are the recommendations off-target?
+
+## The Netflix Recomender System
+### System Overview
+Over 80% of the content people watch on Netflix is discovered through the service's recommender system, making the system an integral part of the service.
+
+
+## Attacks on Recommender System
+
