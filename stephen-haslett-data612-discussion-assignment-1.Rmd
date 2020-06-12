@@ -1,18 +1,16 @@
 ---
-title: "Research Discussion Assignment One"
+title: "Data 612 Discussion Assignment 1"
 author: "Stephen Haslett"
 date: "6/10/2020"
 output:
-  prettydoc::html_pretty:
-    theme: leonids
-    highlight: github
-    toc: yes
+  rmdformats::readthedown
+
 subtitle: "The Netflix Recommender System"
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library(prettydoc)
+library(rmdformats)
 ```
 ## Research Question
 Choose one commercial recommender and describe how you think it works (content-based, collaborative filtering, etc.). Does the technique deliver a good experience or are the recommendations off-target?
