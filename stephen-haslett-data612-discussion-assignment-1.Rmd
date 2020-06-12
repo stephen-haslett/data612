@@ -15,10 +15,10 @@ knitr::opts_chunk$set(echo = TRUE)
 library(prettydoc)
 ```
 ## Research Question
-Choose one commercial recommender and describe how you think it works (content-based, collaborative filtering, etc). Does the technique deliver a good experience or are the recommendations off-target?
+Choose one commercial recommender and describe how you think it works (content-based, collaborative filtering, etc.). Does the technique deliver a good experience or are the recommendations off-target?
 
 ## The Netflix Recommender System
-Netflix utilizes a recommender system that tailors it's extensive media catalog to the interests of individual subscribers. Over 80% of the content people watch on Netflix is discovered through this system, making it an integral part of the service. The system consists of a series of algorithms (based on search, ranking, similarity, ratings, etc.) that analyze the viewing habits of subscribers in order to place them into taste groups. The taste groups that a subscriber belongs to determine what media is used to populate their home screen.
+Netflix utilizes a recommender system that tailors its extensive media catalog to the interests of individual subscribers. Over 80% of the content people watch on Netflix is discovered through this system, making it an integral part of the service. The system consists of a series of algorithms (based on search, ranking, similarity, ratings, etc.) that analyze the viewing habits of subscribers in order to place them into taste groups. The taste groups that a subscriber belongs to determine what media is used to populate their home screen.
 
 The system utilizes both user based collaborative filtering (in that it groups subscribers into taste groups based on their viewing habits), and content based filtering. The content based filtering is likely used to offset the fact that the system does not have viewing profiles for new subscribers. Content based filtering can therefore be used as a catalyst to generate these profiles.
 
@@ -39,11 +39,17 @@ Generates and populates the Trending Now row on a user's profile page. The algor
 Populates the Continue Watching row based on the probability that a user will continue watching a show or movie. It also factors in contextual data such as time passed since last viewing, and at what point in the show/movie did the user stop watching, to determine what content makes it into this row.
 
 #### 5. The Video-Video Similarity Algorithm
-Creates and populates the "Because You Watched" rows on a user's profile. This algorithm takes a movie or show that was watched by a user, and searches for similar content. It then calculates the similarity of that content, and populates the row with the most similar items. Out if the five algorithms, this is the least personalized algorithm.
+Creates and populates the "Because You Watched" rows on a user's profile. This algorithm takes a movie or show that was watched by a user, and searches for similar content. It then calculates the similarity of that content, and populates the row with the most similar items. Out of the five algorithms, this is the least personalized algorithm.
 
 ### Conclusion
 Netflix currently has 182.8 million subscribers, and a high customer retention rate, which suggests that their recommendation system is effective. In terms of user experience, speaking from my own experience as a Netflix subscriber, I am satisfied with the experience and find their suggestions useful when searching for new content.
 
 
 ## Attacks on Recommender Systems
+Read the article below and consider how to handle attacks on recommender systems. Can you think of a similar example where a collective effort to alter the workings of content recommendations have been successful? How would you design a system to prevent this kind of abuse?
 
+Travis M. Andrews, The Washington Post (2017): Wisdom of the crowd? IMDb users gang up on Christian Bale’s new movie before it even opens.
+
+A similar example of this was the apparent use of bots to drive down the audience score for 'The Last Jedi' on the entertainment review site Rotten Tomatoes. The anti Disney Facebook group "Down With Disney's Treatment of Franchises and its Fanboys" claimed that they created bot Facebook accounts to log into Rotten Tomatoes and review bomb the movie.
+
+Apparently, the site uses reCAPTCHA to prevent bots from creating fake accounts. However, the site also offers the option to signup via Facebook, which allows users to bypass the reCAPTCHA check. Therefore, the first step in preventing such an attack would obviously be to remove that option. Additionally, the site could use multi-factor authentication to authenticate users before allowing them to submit a review.
