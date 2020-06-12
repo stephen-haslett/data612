@@ -20,6 +20,8 @@ Choose one commercial recommender and describe how you think it works (content-b
 ## The Netflix Recommender System
 Netflix utilizes a recommender system that tailors it's extensive media catalog to the interests of individual subscribers. Over 80% of the content people watch on Netflix is discovered through this system, making it an integral part of the service. The system consists of a series of algorithms (based on search, ranking, similarity, ratings, etc.) that analyze the viewing habits of subscribers in order to place them into taste groups. The taste groups that a subscriber belongs to determine what media is used to populate their home screen.
 
+The system utilizes both user based collaborative filtering (in that it groups subscribers into taste groups based on their viewing habits), and content based filtering. The content based filtering is likely used to offset the fact that the system does not have viewing profiles for new subscribers. Content based filtering can therefore be used as a catalyst to generate these profiles.
+
 Netflix groups viewing recommendations by genre, and displays them as a series of rows on the subscriber's home screen. This makes it easy for the subscriber to quickly decide if the recommendations that populate a row are worth watching, or if they should jump to the next row.
 
 The system utilizes five major algorithms in order to generate and populate these rows:
@@ -37,7 +39,7 @@ Generates and populates the Trending Now row on a user's profile page. The algor
 Populates the Continue Watching row based on the probability that a user will continue watching a show or movie. It also factors in contextual data such as time passed since last viewing, and at what point in the show/movie did the user stop watching, to determine what content makes it into this row.
 
 #### 5. The Video-Video Similarity Algorithm
-Creates and populates the "Because You Watched" rows on a user's profile.
+Creates and populates the "Because You Watched" rows on a user's profile. This algorithm takes a movie or show that was watched by a user, and searches for similiar content. It then calculates the similarity of that content, and populates the row with the most similiar items. Out if the five algorithms, this is the least personalized algorithm.
 
 ### Does the technique deliver a good experience or are the recommendations off-target?
 
