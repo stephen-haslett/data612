@@ -33,15 +33,16 @@ Categorizes and orders content into rows based on an individual user's viewing h
 Responsible for creating and populating the Top Picks row on a user's profile. This algorithm searches the entire content catalog for top ranking personalized recommendations for a particular user, and adds them to the Top Picks row.
 
 #### 3. Trending Now Algorithm
-Generates and populates the Trending Now row on a user's profile page. The algorithm uses the viewing histories, ratings, and activities of all members to populate this row. Additionally, the algoritm takes into account realtime events when deciding which content it should serve. For example, on Valentine's Day the trending now row is likely to contain a lot of romance based movies and shows.
+Generates and populates the Trending Now row on a user's profile page. The algorithm uses the viewing histories, ratings, and activities of all members to populate this row. Additionally, the algorithm takes into account real-time events when deciding which content it should serve. For example, on Valentine's Day the trending now row is likely to contain a lot of romance based movies and shows.
 
 #### 4. Continue Watching Algorithm
 Populates the Continue Watching row based on the probability that a user will continue watching a show or movie. It also factors in contextual data such as time passed since last viewing, and at what point in the show/movie did the user stop watching, to determine what content makes it into this row.
 
 #### 5. The Video-Video Similarity Algorithm
-Creates and populates the "Because You Watched" rows on a user's profile. This algorithm takes a movie or show that was watched by a user, and searches for similiar content. It then calculates the similarity of that content, and populates the row with the most similiar items. Out if the five algorithms, this is the least personalized algorithm.
+Creates and populates the "Because You Watched" rows on a user's profile. This algorithm takes a movie or show that was watched by a user, and searches for similar content. It then calculates the similarity of that content, and populates the row with the most similar items. Out if the five algorithms, this is the least personalized algorithm.
 
-### Does the technique deliver a good experience or are the recommendations off-target?
+### Conclusion
+Netflix currently has 182.8 million subscribers, and a high customer retention rate, which suggests that their recommendation system is effective. In terms of user experience, speaking from my own experience as a Netflix subscriber, I am satisfied with the experience and find their suggestions useful when searching for new content.
 
 
 ## Attacks on Recommender Systems
