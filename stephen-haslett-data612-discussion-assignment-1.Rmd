@@ -2,30 +2,42 @@
 title: "Research Discussion Assignment One"
 author: "Stephen Haslett"
 date: "6/10/2020"
-output: html_document
+output:
+  prettydoc::html_pretty:
+    theme: leonids
+    highlight: github
+    toc: yes
+subtitle: "The Netflix Recommender System"
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(prettydoc)
 ```
 ## Research Question
-choose one commercial recommender and describe how you think it works (content-based, collaborative filtering, etc). Does the technique deliver a good experience or are the recommendations off-target?
+Choose one commercial recommender and describe how you think it works (content-based, collaborative filtering, etc). Does the technique deliver a good experience or are the recommendations off-target?
 
 ## The Netflix Recommender System
-Over 80% of the content people watch on Netflix is discovered through the service's recommender system, making the system an integral part of the service. The system utilizes five main algorithms to recommend content to users:
+Netflix utilizes a recommender system that tailors it's extensive media catalog to the interests of individual subscribers. Over 80% of the content people watch on Netflix is discovered through this system, making it an integral part of the service. The system consists of a series of algorithms (based on search, ranking, similarity, ratings, etc.) that analyze the viewing habits of subscribers in order to place them into taste groups. The taste groups that a subscriber belongs to determine what media is used to populate their home screen.
 
-#### 1. The Personalised Video Ranker (PVR) Algorithm
-This algorithm categorizes and orders content into rows based on an individual user's viewing history. So for example, if a viewer regularly watches comedy and romance movies, then the system will add a comedy and romance row to the user's profile page containing recommended content for these genres.    
+Netflix groups viewing recommendations by genre, and displays them as a series of rows on the subscriber's home screen. This makes it easy for the subscriber to quickly decide if the recommendations that populate a row are worth watching, or if they should jump to the next row.
 
-#### 2. The Top N Video Ranker Algorithm
-The Top N Video Ranker algorithm is responsible for creating and populating the Top Picks row on a user's profile. This algorithm searches the entire content catalog for top ranking personalized recommendations for a particular user, and adds them to the Top Picks row. 
+The system utilizes five major algorithms in order to generate and populate these rows:
 
-#### 3. The Trending Now Algorithm
+#### 1. Personalized Video Ranker (PVR) Algorithm
+Categorizes and orders content into rows based on an individual user's viewing history. So for example, if a viewer regularly watches comedy and romance movies, then the system will add a comedy and romance row to the user's profile page containing recommended content for these genres.
 
-#### 4. The Continue Watching Algorithm
+#### 2. Top N Video Ranker Algorithm
+Responsible for creating and populating the Top Picks row on a user's profile. This algorithm searches the entire content catalog for top ranking personalized recommendations for a particular user, and adds them to the Top Picks row.
+
+#### 3. Trending Now Algorithm
+Generates and populates the Trending Now row on a user's profile page. The algorithm uses the viewing histories, ratings, and activities of all members to populate this row. Additionally, the algoritm takes into account realtime events when deciding which content it should serve. For example, on Valentine's Day the trending now row is likely to contain a lot of romance based movies and shows.
+
+#### 4. Continue Watching Algorithm
+Populates the Continue Watching row based on the probability that a user will continue watching a show or movie. It also factors in contextual data such as time passed since last viewing, and at what point in the show/movie did the user stop watching, to determine what content makes it into this row.
 
 #### 5. The Video-Video Similarity Algorithm
-This algorithm is responsible for creating and populating the "Because You Watched" rows on a user's profile.
+Creates and populates the "Because You Watched" rows on a user's profile.
 
 ### Does the technique deliver a good experience or are the recommendations off-target?
 
