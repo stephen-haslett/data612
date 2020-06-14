@@ -9,6 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 library(kableExtra)
 library(recommenderlab)
+library(ggplot2)
 
 set.seed(1)
 data(MovieLense)
@@ -30,3 +31,28 @@ similarity_items <- as.matrix(similarity_items)
 similarity_items
 image(similarity_items, main = 'Item similarity')
 ```
+
+
+
+### Explore the data
+```{r, warning=FALSE, message=FALSE}
+ratings_vector <- as.vector(MovieLense@data)
+# Remove empty values.
+ratings_vector <- ratings_vector[ratings_vector != 0]
+ratings_table <- table(ratings_vector)
+ratings_table
+
+
+```
+
+
+```{r, warning=FALSE, message=FALSE}
+ratings_vector <- factor(ratings_vector)
+qplot(ratings_vector) + ggtitle('Distribution of Ratings')
+```
+
+
+
+
+
+
