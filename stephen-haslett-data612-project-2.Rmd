@@ -1,0 +1,32 @@
+---
+title: "Data 612 Project 2"
+author: "Stephen Haslett"
+date: "6/13/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(kableExtra)
+library(recommenderlab)
+
+set.seed(1)
+data(MovieLense)
+```
+
+```{r, warning=FALSE, message=FALSE}
+# User similarity.
+similarity_users <- similarity(MovieLense[1:4, ], method = 'cosine', which = 'users')
+similarity_users <- as.matrix(similarity_users)
+similarity_users
+image(similarity_users, main = 'User similarity')
+```
+
+
+```{r, warning=FALSE, message=FALSE}
+# Item similarity.
+similarity_items <- similarity(MovieLense[, 1:4], method = 'cosine', which = 'items')
+similarity_items <- as.matrix(similarity_items)
+similarity_items
+image(similarity_items, main = 'Item similarity')
+```
