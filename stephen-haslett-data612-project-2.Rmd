@@ -52,7 +52,7 @@ qplot(ratings_vector) + ggtitle('Distribution of Ratings')
 ```
 
 
-###Views per movie.
+### Views per movie.
 ```{r, warning=FALSE, message=FALSE}
 views_per_movie <- colCounts(MovieLense)
 views_table <- data.frame(
@@ -85,7 +85,6 @@ normalized_movie_ratings <- normalize(movie_ratings)
 ```
 
 
-## Item Based Collaborative Filtering
 #### Create the training and test data
 ```{r, warning=FALSE, message=FALSE}
 train <- sample(x = c(TRUE, FALSE), size = nrow(movie_ratings), replace =TRUE, prob = c(0.8, 0.2))
@@ -94,9 +93,11 @@ test_data <- movie_ratings[!train, ]
 ```
 
 
-#### Build the model
+## Item Based Collaborative Filtering
+
+#### Build the item based model
 ```{r, warning=FALSE, message=FALSE}
-item_item_model <- Recommender(data = training_data, method = 'IBCF', parameter = list(k = 30))
+item_item_model <- Recommender(data = training_data, method = 'IBCF')
 item_item_model
 ```
 
@@ -127,10 +128,34 @@ top_items_table
 ```
 
 
+## User Based Collaborative Filtering
 
+#### Build the user based model
+```{r, warning=FALSE, message=FALSE}
+user_user_model <- Recommender(data = training_data, method = 'UBCF')
+user_user_model
+```
 
+### Apply the model to the test data.
+```{r, warning=FALSE, message=FALSE}
+predicted <- predict(object = user_user_model, newdata = test_data, n = 6)
+recommendation_matrix <- sapply(predicted@items, function(x) {
+                           colnames(movie_ratings)[x]
+                         })
 
+# First 4 user recommendations.
+recommendation_matrix[, 1:4]
+```
 
+### Most popular movies
+```{r, warning=FALSE, message=FALSE}
+items_count <- factor(table(recommendation_matrix))
+qplot(items_count) + ggtitle('Distribution of UBCF items')
+```
 
-
-
+```{r, warning=FALSE, message=FALSE}
+items_count_sorted <- sort(items_count, decreasing = TRUE)
+top_items <- head(items_count_sorted, n = 10)
+top_items_table <- data.frame(top_items)
+top_items_table
+```
