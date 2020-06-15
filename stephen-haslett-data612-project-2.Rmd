@@ -76,8 +76,47 @@ movie_ratings <- MovieLense[rowCounts(MovieLense) > 50, colCounts(MovieLense) > 
 movie_ratings
 average_ratings_per_user <- rowMeans(movie_ratings)
 average_ratings_per_user
-
 ```
+
+
+#### Normalize the data
+```{r, warning=FALSE, message=FALSE}
+normalized_movie_ratings <- normalize(movie_ratings)
+```
+
+
+## Item Based Collaborative Filtering
+#### Create the training and test data
+```{r, warning=FALSE, message=FALSE}
+train <- sample(x = c(TRUE, FALSE), size = nrow(movie_ratings), replace =TRUE, prob = c(0.8, 0.2))
+training_data <- movie_ratings[train, ]
+test_data <- movie_ratings[!train, ]
+```
+
+
+#### Build the model
+```{r, warning=FALSE, message=FALSE}
+item_item_model <- Recommender(data = training_data, method = 'IBCF', parameter = list(k = 30))
+item_item_model
+```
+
+
+### Apply the model to the test data.
+```{r, warning=FALSE, message=FALSE}
+predicted <- predict(object = item_item_model, newdata = test_data, n = 6)
+recommendation_matrix <- sapply(predicted@items, function(x) {
+                           colnames(movie_ratings)[x]
+                         })
+
+# First 4 user recommendations.
+recommendation_matrix[, 1:4]
+```
+
+
+
+
+
+
 
 
 
