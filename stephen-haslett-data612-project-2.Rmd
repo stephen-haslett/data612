@@ -124,6 +124,7 @@ qplot(items_count) + ggtitle('Distribution of IBCF items')
 items_count_sorted <- sort(items_count, decreasing = TRUE)
 top_items <- head(items_count_sorted, n = 10)
 top_items_table <- data.frame(top_items)
+colnames(top_items_table) <- c('Rating')
 top_items_table
 ```
 
@@ -157,5 +158,6 @@ qplot(items_count) + ggtitle('Distribution of UBCF items')
 items_count_sorted <- sort(items_count, decreasing = TRUE)
 top_items <- head(items_count_sorted, n = 10)
 top_items_table <- data.frame(top_items)
+colnames(top_items_table) <- c('Rating')
 top_items_table
 ```
