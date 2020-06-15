@@ -113,7 +113,18 @@ recommendation_matrix[, 1:4]
 ```
 
 
+### Most popular movies
+```{r, warning=FALSE, message=FALSE}
+items_count <- factor(table(recommendation_matrix))
+qplot(items_count) + ggtitle('Distribution of IBCF items')
+```
 
+```{r, warning=FALSE, message=FALSE}
+items_count_sorted <- sort(items_count, decreasing = TRUE)
+top_items <- head(items_count_sorted, n = 10)
+top_items_table <- data.frame(top_items)
+top_items_table
+```
 
 
 
