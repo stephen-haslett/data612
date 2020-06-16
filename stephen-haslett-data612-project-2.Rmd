@@ -1,5 +1,5 @@
 ---
-title: "Data 612 Project 2"
+title: "Data 612 Project 2 | Content-Based and Collaborative Filtering"
 author: "Stephen Haslett"
 date: "6/13/2020"
 output: html_document
@@ -10,10 +10,63 @@ knitr::opts_chunk$set(echo = TRUE)
 library(kableExtra)
 library(recommenderlab)
 library(ggplot2)
-
-set.seed(1)
-data(MovieLense)
 ```
+
+## Assignment Instructions
+The goal of this assignment is for you to try out different ways of implementing and configuring a recommender, and to evaluate your different approaches.
+For assignment 2, start with an existing dataset of user-item ratings, such as our toy books dataset, MovieLens, Jester, or another dataset of your choosing.
+Implement at least two of these recommendation algorithms:
+
+- Content-Based Filtering
+- User-User Collaborative Filtering
+- Item-Item Collaborative Filtering
+
+You should evaluate and compare different approaches, using different algorithms, normalization techniques, similarity methods, neighborhood sizes, etc.
+You don’t need to be exhaustive—these are just some suggested possibilities.
+
+You may use the course text’s recommenderlab or any other library that you want. Please provide at least one graph, and a textual summary of your findings and recommendations.
+
+## Introduction
+For this assignment, I used the MovieLense dataset that ships with the recommenderlab package to implement both user and item based collaborative filtering.
+
+### Load the MovieLense Dataset
+Each row of the MovieLense dataset corresponds to a user, each column corresponds to a movie, and each value is a rating. The dataset
+contains 943 users, and 1664 movies.
+```{r, warning=FALSE, message=FALSE}
+set.seed(150)
+data(MovieLense)
+show(MovieLense)
+```
+
+### Data Exploration
+Before implementing the recommender systems, I wanted to explore the data to get an idea of the distribution of ratings,
+and to identify any inconsistencies in the data.
+
+#### Ratings Exploration
+Ratings are integer values ranging from 0 to 5. A zero value rating represents a missing value. As you can see from the below table,
+there are a lot of missing values so in the interest of keeping our data accurate, we can remove these.
+```{r, warning=FALSE, message=FALSE}
+ratings_vector <- as.vector(MovieLense@data)
+ratings_table <- table(ratings_vector)
+ratings_table
+```
+
+#### Remove empty rating values.
+```{r, warning=FALSE, message=FALSE}
+ratings_vector <- ratings_vector[ratings_vector != 0]
+ratings_table <- table(ratings_vector)
+ratings_table
+```
+
+
+#### Ratings Distribution.
+Now that we have removed the missing values, we can take a look at the distribution of ratings.
+```{r, warning=FALSE, message=FALSE}
+ratings_vector <- factor(ratings_vector)
+qplot(ratings_vector) + ggtitle('Distribution of Ratings') + xlab('Rating') + ylab('Count')
+```
+
+
 
 ```{r, warning=FALSE, message=FALSE}
 # User similarity.
@@ -35,21 +88,7 @@ image(similarity_items, main = 'Item similarity')
 
 
 ### Explore the data
-```{r, warning=FALSE, message=FALSE}
-ratings_vector <- as.vector(MovieLense@data)
-# Remove empty values.
-ratings_vector <- ratings_vector[ratings_vector != 0]
-ratings_table <- table(ratings_vector)
-ratings_table
 
-
-```
-
-
-```{r, warning=FALSE, message=FALSE}
-ratings_vector <- factor(ratings_vector)
-qplot(ratings_vector) + ggtitle('Distribution of Ratings')
-```
 
 
 ### Views per movie.
