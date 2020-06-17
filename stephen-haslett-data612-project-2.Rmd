@@ -60,11 +60,38 @@ ratings_table
 
 
 #### Ratings Distribution.
-Now that we have removed the missing values, we can take a look at the distribution of ratings.
+Now that we have removed the missing values, we can take a look at the distribution of ratings. As you can see from the below
+histrogram, the most common movie ratings given by users are 3, 4, and 5, with 4 being the most frequent rating.
+
 ```{r, warning=FALSE, message=FALSE}
 ratings_vector <- factor(ratings_vector)
 qplot(ratings_vector) + ggtitle('Distribution of Ratings') + xlab('Rating') + ylab('Count')
 ```
+
+
+#### Most Viewed Movies
+The next thing I wanted to explore was which movies received the most views. The below histogram displays
+the 10 most viewed movies. As we can see from the histogram, Star Wars received the most views.
+
+```{r, warning=FALSE, message=FALSE}
+views_per_movie <- colCounts(MovieLense)
+views_table <- data.frame(
+  movie = names(views_per_movie),
+  views = views_per_movie
+)
+
+views_table <- views_table[order(views_table$views, decreasing = TRUE), ]
+ggplot(views_table[1:10, ], aes(reorder(movie, - views), y = views)) +
+geom_bar(stat = 'identity') +
+theme(axis.text.x = element_text(angle = 50, hjust = 1)) +
+  ggtitle('10 Most Viewed Movies') +
+  xlab('Movie') +
+  ylab('Number of Views')
+```
+
+
+
+
 
 
 
@@ -90,21 +117,6 @@ image(similarity_items, main = 'Item similarity')
 ### Explore the data
 
 
-
-### Views per movie.
-```{r, warning=FALSE, message=FALSE}
-views_per_movie <- colCounts(MovieLense)
-views_table <- data.frame(
-  movie = names(views_per_movie),
-  views = views_per_movie
-)
-
-views_table <- views_table[order(views_table$views, decreasing = TRUE), ]
-ggplot(views_table[1:6, ], aes(x = movie, y = views)) +
-geom_bar(stat="identity") +
-theme(axis.text.x = element_text(angle = 45, hjust = 1)) + ggtitle("Number of views of the top movies")
-
-```
 
 
 ## Data Preperation
