@@ -65,7 +65,10 @@ histrogram, the most common movie ratings given by users are 3, 4, and 5, with 4
 
 ```{r, warning=FALSE, message=FALSE}
 ratings_vector <- factor(ratings_vector)
-qplot(ratings_vector) + ggtitle('Distribution of Ratings') + xlab('Rating') + ylab('Count')
+qplot(ratings_vector) + ggtitle('Distribution of Ratings') +
+  xlab('Rating') +
+  ylab('Count') +
+  geom_bar(fill = 'red')
 ```
 
 
@@ -82,7 +85,7 @@ views_table <- data.frame(
 
 views_table <- views_table[order(views_table$views, decreasing = TRUE), ]
 ggplot(views_table[1:10, ], aes(reorder(movie, - views), y = views)) +
-geom_bar(stat = 'identity') +
+geom_bar(stat = 'identity', fill = 'red') +
 theme(axis.text.x = element_text(angle = 50, hjust = 1)) +
   ggtitle('10 Most Viewed Movies') +
   xlab('Movie') +
@@ -91,48 +94,26 @@ theme(axis.text.x = element_text(angle = 50, hjust = 1)) +
 
 
 
-
-
-
-
-```{r, warning=FALSE, message=FALSE}
-# User similarity.
-similarity_users <- similarity(MovieLense[1:4, ], method = 'cosine', which = 'users')
-similarity_users <- as.matrix(similarity_users)
-similarity_users
-image(similarity_users, main = 'User similarity')
-```
-
-
-```{r, warning=FALSE, message=FALSE}
-# Item similarity.
-similarity_items <- similarity(MovieLense[, 1:4], method = 'cosine', which = 'items')
-similarity_items <- as.matrix(similarity_items)
-similarity_items
-image(similarity_items, main = 'Item similarity')
-```
-
-
-
-### Explore the data
-
-
-
-
 ## Data Preperation
+Data preperation will involve prunning the data to ensure the accuracy of our recommendations, and splitting the data
+into test and training datasets.
+
+### Prune The Data
+Increase the accuracy of recommendations by selecting only users who have rated at least 50 movies, and
+selecting movies that have been watched at least 100 times.
+
 ```{r, warning=FALSE, message=FALSE}
-# Select only users who have rated at least 50 movies, and
-# movies that have been watched at least 100 times.
 movie_ratings <- MovieLense[rowCounts(MovieLense) > 50, colCounts(MovieLense) > 100]
-movie_ratings
-average_ratings_per_user <- rowMeans(movie_ratings)
-average_ratings_per_user
 ```
 
-
-#### Normalize the data
+### Average Rating Per User Distribution
+A quick look at the average rating per user distribution shows us that there is a lot of variation
+across the ratings data.
 ```{r, warning=FALSE, message=FALSE}
-normalized_movie_ratings <- normalize(movie_ratings)
+average_ratings_per_user <- rowMeans(movie_ratings)
+qplot(average_ratings_per_user) + ggtitle('Average Rating Per User Distribution') +
+  xlab('Average Rating Per User') +
+  ylab('Count')
 ```
 
 
