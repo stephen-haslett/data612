@@ -2,7 +2,10 @@
 title: "Data 612 Project 2 | Content-Based and Collaborative Filtering"
 author: "Stephen Haslett"
 date: "6/13/2020"
-output: html_document
+output:
+  rmdformats::readthedown
+
+subtitle: "Content-Based and Collaborative Filtering"
 ---
 
 ```{r setup, include=FALSE}
@@ -10,6 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(kableExtra)
 library(recommenderlab)
 library(ggplot2)
+library(rmdformats)
 ```
 
 ## Assignment Instructions
@@ -39,7 +43,7 @@ show(MovieLense)
 ```
 
 ### Data Exploration
-Before implementing the recommender systems, I wanted to explore the data to get an idea of the distribution of ratings,
+Before implementing the recommendation models, I wanted to explore the data to get an idea of the distribution of ratings,
 and to identify any inconsistencies in the data.
 
 #### Ratings Exploration
@@ -93,8 +97,7 @@ theme(axis.text.x = element_text(angle = 50, hjust = 1)) +
 ```
 
 
-
-## Data Preperation
+## Data Preparation
 Data preperation will involve prunning the data to ensure the accuracy of our recommendations, and splitting the data
 into test and training sets.
 
@@ -118,13 +121,13 @@ qplot(average_ratings_per_user) + ggtitle('Average Rating Per User Distribution'
 
 
 #### Split the data into training and test sets
-After the split, we are left with 449 records in the training set, and 111 inthe test set.
+After the split, we are left with 449 records in the training set, and 111 in the test set.
 ```{r, warning=FALSE, message=FALSE}
 train <- sample(x = c(TRUE, FALSE), size = nrow(movie_ratings), replace = TRUE, prob = c(0.8, 0.2))
 training_data <- movie_ratings[train, ]
 test_data <- movie_ratings[!train, ]
 
-print(nrow(training_data)) 
+print(nrow(training_data))
 print(nrow(test_data))
 ```
 
@@ -203,8 +206,8 @@ top_items_table
 To evaluate the models, I used the split method to calculate the Root Mean Square Error for both the user based model,
 and the item based model. As you can see from the below table, The RMSE for the user based model is lower than that of the item based
 model suggesting that it may be the more accurate of the two models.
- 
-```{r params, warning=FALSE, message=FALSE, echo=FALSE}
+
+```{r, warning=FALSE, message=FALSE}
 e <- evaluationScheme(movie_ratings, method = 'split', train = 0.9, given = 15)
 ubcf <- Recommender(getData(e, 'train'), 'UBCF')
 ibcf <- Recommender(getData(e, 'train'), 'IBCF')
@@ -221,5 +224,5 @@ error
 ```
 
 
-
 ## Conclusion
+Based on my subset of the MovieLense dataset, the above analysis suggests that user based collaborative models out perform item based collaborative models in terms of accuracy.
