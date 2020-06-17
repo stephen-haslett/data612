@@ -96,7 +96,7 @@ theme(axis.text.x = element_text(angle = 50, hjust = 1)) +
 
 ## Data Preperation
 Data preperation will involve prunning the data to ensure the accuracy of our recommendations, and splitting the data
-into test and training datasets.
+into test and training sets.
 
 ### Prune The Data
 Increase the accuracy of recommendations by selecting only users who have rated at least 50 movies, and
@@ -117,15 +117,22 @@ qplot(average_ratings_per_user) + ggtitle('Average Rating Per User Distribution'
 ```
 
 
-#### Create the training and test data
+#### Split the data into training and test sets
+After the split, we are left with 449 records in the training set, and 111 inthe test set.
 ```{r, warning=FALSE, message=FALSE}
-train <- sample(x = c(TRUE, FALSE), size = nrow(movie_ratings), replace =TRUE, prob = c(0.8, 0.2))
+train <- sample(x = c(TRUE, FALSE), size = nrow(movie_ratings), replace = TRUE, prob = c(0.8, 0.2))
 training_data <- movie_ratings[train, ]
 test_data <- movie_ratings[!train, ]
+
+print(nrow(training_data)) 
+print(nrow(test_data))
 ```
 
+## Recommendation Models
+Now that the data has been cleaned and split into test and training sets, we can build our recommendation models.
 
-## Item Based Collaborative Filtering
+
+### Item Based Collaborative Filtering
 
 #### Build the item based model
 ```{r, warning=FALSE, message=FALSE}
@@ -137,19 +144,18 @@ item_item_model
 ### Apply the model to the test data.
 ```{r, warning=FALSE, message=FALSE}
 predicted <- predict(object = item_item_model, newdata = test_data, n = 6)
-recommendation_matrix <- sapply(predicted@items, function(x) {
-                           colnames(movie_ratings)[x]
-                         })
+recommendation_matrix <- sapply(predicted@items, function(x) { colnames(movie_ratings)[x] })
 
 # First 4 user recommendations.
 recommendation_matrix[, 1:4]
 ```
 
 
-### Most popular movies
+### Distribution of Movie Recommendations
+The movie recommendations distribution tells us that the majority of movies are only recommended a few times.
 ```{r, warning=FALSE, message=FALSE}
 items_count <- factor(table(recommendation_matrix))
-qplot(items_count) + ggtitle('Distribution of IBCF items')
+qplot(items_count, ylab = 'Movie Count', xlab = 'Recommendation Count') + ggtitle('Distribution of Movie Recommendations')
 ```
 
 ```{r, warning=FALSE, message=FALSE}
@@ -172,18 +178,17 @@ user_user_model
 ### Apply the model to the test data.
 ```{r, warning=FALSE, message=FALSE}
 predicted <- predict(object = user_user_model, newdata = test_data, n = 6)
-recommendation_matrix <- sapply(predicted@items, function(x) {
-                           colnames(movie_ratings)[x]
-                         })
+recommendation_matrix <- sapply(predicted@items, function(x) { colnames(movie_ratings)[x] })
 
 # First 4 user recommendations.
 recommendation_matrix[, 1:4]
 ```
 
-### Most popular movies
+### Distribution of User Based Collaborative Filtering items
+Like the item based movie recommendations distribution, the user based distribution tells us that the majority of movies are only recommended a few times.
 ```{r, warning=FALSE, message=FALSE}
 items_count <- factor(table(recommendation_matrix))
-qplot(items_count) + ggtitle('Distribution of UBCF items')
+qplot(items_count, ylab = 'Movie Count', xlab = 'Recommendation Count') + ggtitle('Distribution of Movie Recommendations')
 ```
 
 ```{r, warning=FALSE, message=FALSE}
@@ -193,3 +198,28 @@ top_items_table <- data.frame(top_items)
 colnames(top_items_table) <- c('Rating')
 top_items_table
 ```
+
+## Model Evaluation
+To evaluate the models, I used the split method to calculate the Root Mean Square Error for both the user based model,
+and the item based model. As you can see from the below table, The RMSE for the user based model is lower than that of the item based
+model suggesting that it may be the more accurate of the two models.
+ 
+```{r params, warning=FALSE, message=FALSE, echo=FALSE}
+e <- evaluationScheme(movie_ratings, method = 'split', train = 0.9, given = 15)
+ubcf <- Recommender(getData(e, 'train'), 'UBCF')
+ibcf <- Recommender(getData(e, 'train'), 'IBCF')
+
+predict_ubcf <- predict(ubcf, getData(e, 'known'), type = 'ratings')
+predict_ibcf <- predict(ibcf, getData(e, 'known'), type = 'ratings')
+
+ubcf_error <- calcPredictionAccuracy(predict_ubcf, getData(e, 'unknown'))
+ibcf_error <- calcPredictionAccuracy(predict_ibcf, getData(e, 'unknown'))
+
+error <- rbind(ubcf_error, ibcf_error)
+rownames(error) <- c('UBCF','IBCF')
+error
+```
+
+
+
+## Conclusion
