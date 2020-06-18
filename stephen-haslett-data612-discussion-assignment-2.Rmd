@@ -1,0 +1,16 @@
+---
+title: "Data 612 Discussion Assignment 2"
+author: "Stephen Haslett"
+date: "6/17/2020"
+output:
+  rmdformats::readthedown
+
+subtitle: ""
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(rmdformats)
+```
+## Assignment Instructions
+For this discussion item, please watch the talk and summarize what you found to be the most important or interesting points. The first half will cover some of the mathematical techniques covered in this unit's reading and the second half some of the data management challenges in an industrial-scale recommendation system.
