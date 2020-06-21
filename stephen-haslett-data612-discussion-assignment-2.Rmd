@@ -32,7 +32,7 @@ This approach to collaborative filtering, utilizes user ratings in order to pred
 
 
 ### Implicit Matrix Factorization
-In the implicit approach (the approach to collaborative filtering utilized by Spotify), binary values are used in place of explicit user ratings. In the case of Spotify, a 1 means that the user has streamed a specific song, and a 0 means that they have not streamed the song.
+In the implicit approach (the approach utilized by Spotify), binary values are used in place of explicit user ratings. Rather than recommending content based on a user's previous ratings, Spotify's recommendation system interprets a user listening to a song as a decision. It then assigns a binary value, a 1 means that the user has streamed a specific song, and a 0 means that they have not streamed a song. Based on this logic, the system can figure out what songs to recommend to the user based on their similarity to those that the user has already streamed (or not streamed).
 
 ![Implicit matrix factorization.](./implicit_fact.jpeg)
 
