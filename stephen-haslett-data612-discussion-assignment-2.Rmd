@@ -4,13 +4,24 @@ author: "Stephen Haslett"
 date: "6/17/2020"
 output:
   rmdformats::readthedown
-
-subtitle: ""
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(rmdformats)
 ```
-## Assignment Instructions
+
+## Music Recommendations at Scale with Spark
+
+### Assignment Instructions
 For this discussion item, please watch the talk and summarize what you found to be the most important or interesting points. The first half will cover some of the mathematical techniques covered in this unit's reading and the second half some of the data management challenges in an industrial-scale recommendation system.
+
+Video link: http://www.youtube.com/watch?v=3LBgiFch4_g
+
+In the video referenced above, Christopher Johnson, a machine learning engineer at Spotify, explains the internal workings of Spotify's music recommendation system.
+The following is a summary of the most interesting points covered in his talk.
+
+### Mathematical Techniques Utilized by Spotify's Recommendation System
+When it comes to recommending music to its users, Spotify mainly relies on collaborative filtering. In the video, the speaker covers 2 mathmatical approaches to collaborative filtering - Explicit Matrix Factorization, and Implicit Matrix Factorization.
+
+#### Explicit Matrix Factorization
