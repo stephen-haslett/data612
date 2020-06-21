@@ -1,0 +1,29 @@
+---
+title: "Data 612 Project 3 | Matrix Factorization Methods"
+author: "Stephen Haslett"
+date: "6/21/2020"
+output:
+  rmdformats::readthedown
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(kableExtra)
+library(recommenderlab)
+library(ggplot2)
+library(rmdformats)
+```
+
+## Assignment Instructions
+Your task is implement a matrix factorization method—such as singular value decomposition (SVD) or
+Alternating Least Squares (ALS)—in the context of a recommender system.
+
+You may approach this assignment in a number of ways. You are welcome to start with an existing recommender
+system written by yourself or someone else. Remember as always to cite your sources,
+so that you can be graded on what you added, not what you found.
+
+SVD can be thought of as a pre-processing step for feature engineering. You might easily start with
+thousands or millions of items, and use SVD to create a much smaller set of “k” items (e.g. 20 or 70).
+
+
+## Introduction
