@@ -12,10 +12,12 @@ library(kableExtra)
 library(recommenderlab)
 library(ggplot2)
 library(rmdformats)
+library(rsvd)
+library(BBmisc)
 ```
 
 ## Assignment Instructions
-Your task is implement a matrix factorization method—such as singular value decomposition (SVD) or
+Your task is to implement a matrix factorization method—such as singular value decomposition (SVD) or
 Alternating Least Squares (ALS)—in the context of a recommender system.
 
 You may approach this assignment in a number of ways. You are welcome to start with an existing recommender
@@ -27,3 +29,48 @@ thousands or millions of items, and use SVD to create a much smaller set of “k
 
 
 ## Introduction
+For this assignment, I am going to expand upon the MovieLense recommender system I built for Project 2.
+
+## Build the MovieLense Recommender System
+
+### Load the MovieLense dataset
+```{r, warning=FALSE, message=FALSE}
+set.seed(150)
+data(MovieLense)
+show(MovieLense)
+```
+
+
+### Select only users who have rated at least 50 movies, and movies that have been watched at least 100 times.
+```{r, warning=FALSE, message=FALSE}
+movie_ratings <- MovieLense[rowCounts(MovieLense) > 50, colCounts(MovieLense) > 100]
+movie_ratings <- as.matrix(movie_ratings@data)
+```
+
+
+### Convert 0 values (missing data) to NA values, and then replace the NULL values with row mean values.
+```{r, warning=FALSE, message=FALSE}
+# Impute the data
+movie_ratings[movie_ratings == 0] <- NA
+value <- which(is.na(movie_ratings), arr.ind = TRUE)
+movie_ratings[value] <- rowMeans(movie_ratings, na.rm = TRUE)[value[,1]]
+movie_ratings
+```
+
+
+## Singular Value Decomposition
+
+### Apply the SVD model to the data and create a variance table for each dimension.
+```{r, warning=FALSE, message=FALSE}
+normalized_data <- normalize(movie_ratings, method = 'center')
+# Apply SVD to the data.
+svd_data <- svd(normalized_data)
+
+dimension_variance_table <- prop.table(svd_data$d^2)
+```
+
+
+
+
+
+
