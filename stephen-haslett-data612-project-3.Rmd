@@ -31,7 +31,7 @@ thousands or millions of items, and use SVD to create a much smaller set of “k
 ## Introduction
 For this assignment, I am going to expand upon the MovieLense recommender system I built for Project 2.
 
-## Build the MovieLense Recommender System
+## Data Manipulation
 
 ### Load the MovieLense dataset
 ```{r, warning=FALSE, message=FALSE}
@@ -41,36 +41,70 @@ show(MovieLense)
 ```
 
 
-### Select only users who have rated at least 50 movies, and movies that have been watched at least 100 times.
+### Select only users who have rated at least 50 movies, and movies that have been watched at least 100 times
 ```{r, warning=FALSE, message=FALSE}
 movie_ratings <- MovieLense[rowCounts(MovieLense) > 50, colCounts(MovieLense) > 100]
 movie_ratings <- as.matrix(movie_ratings@data)
 ```
 
 
-### Convert 0 values (missing data) to NA values, and then replace the NULL values with row mean values.
+### Convert 0 values (missing data) to NA values, and then replace the NULL values with row mean values
 ```{r, warning=FALSE, message=FALSE}
 # Impute the data
 movie_ratings[movie_ratings == 0] <- NA
 value <- which(is.na(movie_ratings), arr.ind = TRUE)
 movie_ratings[value] <- rowMeans(movie_ratings, na.rm = TRUE)[value[,1]]
-movie_ratings
 ```
 
 
-## Singular Value Decomposition
-
-### Apply the SVD model to the data and create a variance table for each dimension.
+### Split the data into training and test sets.
 ```{r, warning=FALSE, message=FALSE}
-normalized_data <- normalize(movie_ratings, method = 'center')
-# Apply SVD to the data.
-svd_data <- svd(normalized_data)
+train <- sample(x = c(TRUE, FALSE), size = nrow(movie_ratings), replace = TRUE, prob = c(0.8, 0.2))
+training_data <- movie_ratings[train, ]
+test_data <- movie_ratings[!train, ]
 
-dimension_variance_table <- prop.table(svd_data$d^2)
+print(nrow(training_data))
+print(nrow(test_data))
 ```
 
 
+### Normalize the data and apply the SVD model
+```{r, warning=FALSE, message=FALSE}
+# Normalize the data and then apply the SVD model.
+normalized_data <- normalize(movie_ratings)
+svd_data <- svd(normalized_data)
+```
 
 
+## Model Evaluation
+```{r, warning=FALSE, message=FALSE}
+movie_data <- as(normalized_data, 'realRatingMatrix')
+e <- evaluationScheme(movie_data, method = 'split', train = 0.9, given = 15, goodRating = 3, k = 10)
+ubcf <- Recommender(getData(e, 'train'), 'UBCF')
+ibcf <- Recommender(getData(e, 'train'), 'IBCF')
+svd_model <- Recommender(getData(e, 'train'), 'SVD')
 
+predict_ubcf <- predict(ubcf, getData(e, 'known'), type = 'ratings')
+predict_ibcf <- predict(ibcf, getData(e, 'known'), type = 'ratings')
+predict_svd <- predict(svd_model, getData(e, 'known'), type = 'ratings')
 
+ubcf_error <- calcPredictionAccuracy(predict_ubcf, getData(e, 'unknown'))
+ibcf_error <- calcPredictionAccuracy(predict_ibcf, getData(e, 'unknown'))
+svd_error <- calcPredictionAccuracy(predict_svd, getData(e, 'unknown'))
+
+error <- rbind(ubcf_error, ibcf_error, svd_error)
+rownames(error) <- c('UBCF','IBCF', 'SVD')
+
+error
+```
+
+### Prediction Error Comparision
+```{r, warning=FALSE, message=FALSE}
+barplot(error,
+        main = "Prediction Error Comparison",
+        ylab = 'Error Rate',
+        xlab = 'Error Type',
+        col=c('RoyalBlue','Tomato', 'YellowGreen'),
+        legend = rownames(error),
+        beside = TRUE)
+```
