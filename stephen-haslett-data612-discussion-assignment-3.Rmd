@@ -1,0 +1,18 @@
+---
+title: "Data 612 Discussion Assignment 3"
+author: "Stephen Haslett"
+date: "6/27/2020"
+output:
+  rmdformats::readthedown
+
+subtitle: 'Human bias reinforcement in recommender systems'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(rmdformats)
+```
+
+
+## Assignment Instructions
+As more systems and sectors are driven by predictive analytics, there is increasing awareness of the possibility and pitfalls of algorithmic discrimination. In what ways do you think Recommender Systems reinforce human bias? Reflecting on the techniques we have covered, do you think recommender systems reinforce or help to prevent unethical targeting or customer segmentation?  Please provide one or more examples to support your arguments.
