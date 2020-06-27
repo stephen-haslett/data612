@@ -16,3 +16,9 @@ library(rmdformats)
 
 ## Assignment Instructions
 As more systems and sectors are driven by predictive analytics, there is increasing awareness of the possibility and pitfalls of algorithmic discrimination. In what ways do you think Recommender Systems reinforce human bias? Reflecting on the techniques we have covered, do you think recommender systems reinforce or help to prevent unethical targeting or customer segmentation?  Please provide one or more examples to support your arguments.
+
+## Introduction
+Recommender systems rely on user data in order to make recommendations. Inherently, user data consists of human biases and thus when this data is fed to a recommender system, these biases are further amplified, and propagated back to users in the form of system generated recommendations. At some stage or another, the system is going to reingest user data based on these recommendations, further amplify the biases contained within the data, serve further recommendations, and thus the downward spiral continues.
+
+## Forms of Bias
+
