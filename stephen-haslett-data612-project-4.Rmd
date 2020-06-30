@@ -54,7 +54,60 @@ hist(getRatings(Jester5k),
      ylab = 'Frequency',
      xlab = 'Rating',
      col = 'Tomato')
+```
 
+### Recommender Algorithms
+```{r, warning=FALSE, message=FALSE}
+set.seed(1)
+evaluation <- evaluationScheme(Jester5k, method = 'split', train = 0.8, k = 1, given = 10, goodRating = 1)
+user_based_model <- Recommender(getData(evaluation, 'train'), 'UBCF')
+item_based_model <- Recommender(getData(evaluation, 'train'), 'IBCF')
+popular_model <- Recommender(getData(evaluation, 'train'), 'POPULAR')
+random_model <- Recommender(getData(evaluation, 'train'), 'RANDOM')
+```
+
+
+
+#### Prediction Accuracy
+```{r, warning=FALSE, message=FALSE}
+user_predict <- predict(user_based_model, getData(evaluation, 'known'), type = 'ratings')
+item_predict <- predict(item_based_model, getData(evaluation, 'known'), type = 'ratings')
+popular_predict <- predict(popular_model, getData(evaluation, 'known'), type = 'ratings')
+random_predict <- predict(random_model, getData(evaluation, 'known'), type = 'ratings')
+
+results <- rbind(
+  'User Model Accuracy' = calcPredictionAccuracy(user_predict, getData(evaluation, 'unknown')), 
+  'Item Model Accuracy' = calcPredictionAccuracy(item_predict, getData(evaluation, 'unknown')),
+  'Popular Model Accuracy' = calcPredictionAccuracy(popular_predict, getData(evaluation, 'unknown')),
+  'Random Model Accuracy' = calcPredictionAccuracy(random_predict, getData(evaluation, 'unknown'))
+)
+knitr::kable(results, format = 'html') %>%
+  kableExtra::kable_styling(bootstrap_options = c('striped', 'hover'))
+
+```
+
+```{r, warning=FALSE, message=FALSE}
+models <- list('User Based Model' = list(name = 'UBCF', param = list(nn = 50)),
+               'Item Based Model' = list(name = 'IBCF', param = list(k = 50)),
+               'Popular Model' = list(name = 'POPULAR', param = NULL),
+               'Random Model' = list(name = 'RANDOM', param = NULL))
+
+results <- evaluate(evaluation, models, type = 'topNList', n = c(1, 5, 10, 20, 30, 50))
+results
+```
+
+### Analysis
+
+#### Precision Recall
+```{r, warning=FALSE, message=FALSE}
+plot(results, 'prec/rec', annotate = c(1, 3))
+```
+
+
+
+#### ROC
+```{r, warning=FALSE, message=FALSE}
+plot(results, 'ROC', annotate = c(4, 3))
 ```
 
 
