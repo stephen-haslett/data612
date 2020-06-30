@@ -1,0 +1,60 @@
+---
+title: "Data 612 Project 4 | Accuracy and Beyond"
+author: "Stephen Haslett"
+date: "6/28/2020"
+output:
+  rmdformats::readthedown
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(kableExtra)
+library(recommenderlab)
+library(ggplot2)
+library(rmdformats)
+library(rsvd)
+library(BBmisc)
+```
+
+## Assignment Instructions
+1. As in your previous assignments, compare the accuracy of at least two recommender system algorithms against your offline data.
+
+2. Implement support for at least one business or user experience goal such as increased serendipity, novelty, or diversity.
+
+3. Compare and report on any change in accuracy before and after you’ve made the change in #2.
+
+4. As part of your textual conclusion, discuss one or more additional experiments that could be performed and/or metrics that could be
+   evaluated only if online evaluation was possible. Also, briefly propose how you would design a reasonable online evaluation environment.
+
+## Introduction
+For my previous projects, I used the MovieLense dataset so for this project I will be using the Jester joke rating dataset - http://eigentaste.berkeley.edu/dataset. The recommederlab package ships with a thined down version of the orignal version, so I will be using this version of the dataset. 
+
+## Data Manipulation
+
+### Load the Jester5k dataset
+```{r, warning=FALSE, message=FALSE}
+set.seed(150)
+data(Jester5k)
+show(Jester5k)
+```
+
+
+The following image displays the first 25 users' ratings of jokes 1 though 40.  
+```{r, warning=FALSE, message=FALSE}
+image(Jester5k[1:25, 1:40], "Jester Ratings Sample")
+```
+
+The red cells represent positively rated jokes, the blue cells represent negatively rated items, and the white cells represent jokes without ratings.
+
+### Distribution of ratings
+
+```{r, warning=FALSE, message=FALSE}
+hist(getRatings(Jester5k),
+     main = 'Distribution of Ratings',
+     ylab = 'Frequency',
+     xlab = 'Rating',
+     col = 'Tomato')
+
+```
+
+
