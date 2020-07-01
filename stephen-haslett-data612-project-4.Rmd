@@ -14,6 +14,8 @@ library(ggplot2)
 library(rmdformats)
 library(rsvd)
 library(BBmisc)
+library(tidyverse)
+
 ```
 
 ## Assignment Instructions
@@ -76,33 +78,33 @@ A look at the average ratings across all jokes shows us that the average rating 
 
 ### Recommender Algorithms
 
-In this section, I am going to explore the performance of the UBCF, and IBCF recommender algorithms. Additionally, in order to satisfy
-requirement 2 of the assignment (introducting serendipity and novelty), I will utilize the POPULAR and RANDOM algorithms.
+In this section, I am going to explore the performance of the UBCF, and IBCF recommender algorithms. Additionally, in order
+to satisfy requirement 2 of the assignment (introducing novelty), I will utilize the RANDOM model.
 
 
 ```{r, warning=FALSE, message=FALSE}
 set.seed(1)
-# Define an evaluation scheme and pass it to all 5 models.
+# Define an evaluation scheme and pass it to all 3 models.
 evaluation <- evaluationScheme(Jester5k, method = 'split', train = 0.8, k = 1, given = 10, goodRating = 1)
 user_based_model <- Recommender(getData(evaluation, 'train'), 'UBCF')
 item_based_model <- Recommender(getData(evaluation, 'train'), 'IBCF')
-popular_model <- Recommender(getData(evaluation, 'train'), 'POPULAR')
 random_model <- Recommender(getData(evaluation, 'train'), 'RANDOM')
 ```
 
 
 
-#### Prediction Accuracy
+#### Model Prediction Accuracy
+
+Using recommenderlab's prediction functions, we can calculate the accuracy of each model.
+
 ```{r, warning=FALSE, message=FALSE}
 user_predict <- predict(user_based_model, getData(evaluation, 'known'), type = 'ratings')
 item_predict <- predict(item_based_model, getData(evaluation, 'known'), type = 'ratings')
-popular_predict <- predict(popular_model, getData(evaluation, 'known'), type = 'ratings')
 random_predict <- predict(random_model, getData(evaluation, 'known'), type = 'ratings')
 
 results <- rbind(
   'User Model Accuracy' = calcPredictionAccuracy(user_predict, getData(evaluation, 'unknown')), 
   'Item Model Accuracy' = calcPredictionAccuracy(item_predict, getData(evaluation, 'unknown')),
-  'Popular Model Accuracy' = calcPredictionAccuracy(popular_predict, getData(evaluation, 'unknown')),
   'Random Model Accuracy' = calcPredictionAccuracy(random_predict, getData(evaluation, 'unknown'))
 )
 knitr::kable(results, format = 'html') %>%
@@ -110,10 +112,13 @@ knitr::kable(results, format = 'html') %>%
 
 ```
 
+
+As reflected in the above table, The least accurate model is the RANDOM model, were as the most accurate model is the UBCF model. This is not surpising
+as recommendations based on previous ratings will be more accurate than those picked randomly.
+
 ```{r, warning=FALSE, message=FALSE}
 models <- list('User Based Model' = list(name = 'UBCF', param = list(nn = 50)),
                'Item Based Model' = list(name = 'IBCF', param = list(k = 50)),
-               'Popular Model' = list(name = 'POPULAR', param = NULL),
                'Random Model' = list(name = 'RANDOM', param = NULL))
 
 results <- evaluate(evaluation, models, type = 'topNList', n = c(1, 5, 10, 20, 30, 50))
@@ -121,17 +126,54 @@ results
 ```
 
 ### Analysis
+Next we can explore the Precision Recall and ROC Curve for all 3 models. Again, the UBCF model out performs the other models in terms of
+both precision, and ROC.
 
 #### Precision Recall
 ```{r, warning=FALSE, message=FALSE}
-plot(results, 'prec/rec', annotate = c(1, 3))
+plot(results, 'prec/rec', annotate = 1)
+title('Precision Recall')
 ```
 
 
 
-#### ROC
+#### ROC Curve
 ```{r, warning=FALSE, message=FALSE}
-plot(results, 'ROC', annotate = c(4, 3))
+plot(results, 'ROC', annotate = 1)
+title('ROC Curve')
 ```
 
+### Introducing Novelty
+
+To introduce novelty into the equation, we will create a hybrid recommendation model that combines the RANDOM model with the top
+performing UBCF model. We will then measure the accuracy of the model. 
+
+```{r, warning=FALSE, message=FALSE}
+# Create the hybrid model.
+hybrid_model <- HybridRecommender(user_based_model, random_model, weights = c(0.8, 0.2))
+
+# Predict the accuracy of the model.
+hybrid_predict <- predict(hybrid_model, getData(evaluation, 'known'), type = 'ratings')
+
+hybrid_results <- calcPredictionAccuracy(hybrid_predict, getData(evaluation, 'unknown')) 
+knitr::kable(hybrid_results, format = 'html') %>%
+  kableExtra::kable_styling(bootstrap_options = c('striped', 'hover'))
+```
+
+### Model RMSE Comparision
+
+Finally, we will compare the RMSE of the original UBCF model with that of the new hybrid model so we can get a side by side comparison.
+
+```{r, warning=FALSE, message=FALSE}
+user_results <- calcPredictionAccuracy(user_predict, getData(evaluation, 'unknown'))
+comparison <- rbind(
+  'User Model RMSE' = user_results['RMSE'], 
+  'Hybrid Model RMSE' = hybrid_results['RMSE']
+)
+
+knitr::kable(comparison, format = 'html') %>%
+  kableExtra::kable_styling(bootstrap_options = c('striped', 'hover'))
+```
+
+As reflected in the above table, the RMSE is higher for the hybrid model than for the UBCF model and thus UBCF is the most accurate model.
 
