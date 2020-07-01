@@ -178,3 +178,9 @@ knitr::kable(comparison, format = 'html') %>%
 As reflected in the above table, the RMSE is higher for the hybrid model than for the UBCF model and thus UBCF is the most accurate model.
 
 ## Conclusion
+
+Offline evaluations of recommender systems can be viewed as static, as the dataset used for testing does not change. However, with online evaluations, the dataset is being updated in realtime as new users and ratings are added to the set. In this sense then we can view offline evaluations as static, and online evaluations as dynamic.
+
+Due to the dynamic nature of online evaluations, they provide the ability to monitor user interactions as they happen (such a Click Through Rates, actions taken on recommended items etc.), and thus provide a more accurate evaluation of the system in question.
+
+If this particular evaluation were conducted in an online environment, we could have introduced more data to our analysis to assess the performance of the recommender system. For example, if we had the ability to monitor how user ratings were affected by the changes we applied to the models (for example adding random recommendations), we could assess which changes were effective and thus fine tune the system for accuracy.  
