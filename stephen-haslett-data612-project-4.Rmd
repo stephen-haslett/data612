@@ -27,9 +27,9 @@ library(BBmisc)
    evaluated only if online evaluation was possible. Also, briefly propose how you would design a reasonable online evaluation environment.
 
 ## Introduction
-For my previous projects, I used the MovieLense dataset so for this project I will be using the Jester joke rating dataset - http://eigentaste.berkeley.edu/dataset. The recommederlab package ships with a thined down version of the orignal version, so I will be using this version of the dataset. 
+For my previous projects, I used the MovieLense dataset so for this project, I will be using the Jester joke rating dataset - http://eigentaste.berkeley.edu/dataset. The recommederlab package ships with a thinned down version of the orignal version, so I will be using this version of the dataset. 
 
-## Data Manipulation
+## Initial Data Analysis
 
 ### Load the Jester5k dataset
 ```{r, warning=FALSE, message=FALSE}
@@ -39,7 +39,7 @@ show(Jester5k)
 ```
 
 
-The following image displays the first 25 users' ratings of jokes 1 though 40.  
+The following image displays the first 25 users' ratings of jokes 1 through 40.  
 ```{r, warning=FALSE, message=FALSE}
 image(Jester5k[1:25, 1:40], "Jester Ratings Sample")
 ```
@@ -56,9 +56,33 @@ hist(getRatings(Jester5k),
      col = 'Tomato')
 ```
 
+The ratings distribution tells us that the majority of jokes in our subset were given positive ratings. However,
+a comparatively small amount of jokes in the set earned the higest rating of 10.
+
+### Average rating across all jokes.
+```{r, warning=FALSE, message=FALSE}
+mean_rating <- colMeans(Jester5k)
+quantile(mean_rating)
+```
+
+
+```{r, warning=FALSE, message=FALSE}
+qplot(mean_rating,
+     main = 'Distribution of Average Ratings',
+     xlab = 'Average Rating')
+```
+
+A look at the average ratings across all jokes shows us that the average rating for a good joke is 1.
+
 ### Recommender Algorithms
+
+In this section, I am going to explore the performance of the UBCF, and IBCF recommender algorithms. Additionally, in order to satisfy
+requirement 2 of the assignment (introducting serendipity and novelty), I will utilize the POPULAR and RANDOM algorithms.
+
+
 ```{r, warning=FALSE, message=FALSE}
 set.seed(1)
+# Define an evaluation scheme and pass it to all 5 models.
 evaluation <- evaluationScheme(Jester5k, method = 'split', train = 0.8, k = 1, given = 10, goodRating = 1)
 user_based_model <- Recommender(getData(evaluation, 'train'), 'UBCF')
 item_based_model <- Recommender(getData(evaluation, 'train'), 'IBCF')
