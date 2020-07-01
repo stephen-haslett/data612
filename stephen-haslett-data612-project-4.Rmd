@@ -29,7 +29,7 @@ library(tidyverse)
    evaluated only if online evaluation was possible. Also, briefly propose how you would design a reasonable online evaluation environment.
 
 ## Introduction
-For my previous projects, I used the MovieLense dataset so for this project, I will be using the Jester joke rating dataset - http://eigentaste.berkeley.edu/dataset. The recommederlab package ships with a thinned down version of the orignal version, so I will be using this version of the dataset. 
+For my previous projects, I used the MovieLense dataset so for this project, I will be using the Jester joke rating dataset - http://eigentaste.berkeley.edu/dataset. The recommederlab package ships with a thinned down version of the original version, so I will be using this version of the dataset. 
 
 ## Initial Data Analysis
 
@@ -59,7 +59,7 @@ hist(getRatings(Jester5k),
 ```
 
 The ratings distribution tells us that the majority of jokes in our subset were given positive ratings. However,
-a comparatively small amount of jokes in the set earned the higest rating of 10.
+a comparatively small amount of jokes in the set earned the highest rating of 10.
 
 ### Average rating across all jokes.
 ```{r, warning=FALSE, message=FALSE}
@@ -76,7 +76,7 @@ qplot(mean_rating,
 
 A look at the average ratings across all jokes shows us that the average rating for a good joke is 1.
 
-### Recommender Algorithms
+## Recommender Algorithms
 
 In this section, I am going to explore the performance of the UBCF, and IBCF recommender algorithms. Additionally, in order
 to satisfy requirement 2 of the assignment (introducing novelty), I will utilize the RANDOM model.
@@ -93,7 +93,7 @@ random_model <- Recommender(getData(evaluation, 'train'), 'RANDOM')
 
 
 
-#### Model Prediction Accuracy
+## Model Prediction Accuracy
 
 Using recommenderlab's prediction functions, we can calculate the accuracy of each model.
 
@@ -113,7 +113,7 @@ knitr::kable(results, format = 'html') %>%
 ```
 
 
-As reflected in the above table, The least accurate model is the RANDOM model, were as the most accurate model is the UBCF model. This is not surpising
+As reflected in the above table, The least accurate model is the RANDOM model, were as the most accurate model is the UBCF model. This is not surprising
 as recommendations based on previous ratings will be more accurate than those picked randomly.
 
 ```{r, warning=FALSE, message=FALSE}
@@ -125,7 +125,7 @@ results <- evaluate(evaluation, models, type = 'topNList', n = c(1, 5, 10, 20, 3
 results
 ```
 
-### Analysis
+## Analysis
 Next we can explore the Precision Recall and ROC Curve for all 3 models. Again, the UBCF model out performs the other models in terms of
 both precision, and ROC.
 
@@ -143,7 +143,7 @@ plot(results, 'ROC', annotate = 1)
 title('ROC Curve')
 ```
 
-### Introducing Novelty
+## Introducing Novelty
 
 To introduce novelty into the equation, we will create a hybrid recommendation model that combines the RANDOM model with the top
 performing UBCF model. We will then measure the accuracy of the model. 
@@ -160,7 +160,7 @@ knitr::kable(hybrid_results, format = 'html') %>%
   kableExtra::kable_styling(bootstrap_options = c('striped', 'hover'))
 ```
 
-### Model RMSE Comparision
+## Model RMSE Comparision
 
 Finally, we will compare the RMSE of the original UBCF model with that of the new hybrid model so we can get a side by side comparison.
 
@@ -177,3 +177,4 @@ knitr::kable(comparison, format = 'html') %>%
 
 As reflected in the above table, the RMSE is higher for the hybrid model than for the UBCF model and thus UBCF is the most accurate model.
 
+## Conclusion
