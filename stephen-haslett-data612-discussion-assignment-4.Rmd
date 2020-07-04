@@ -1,0 +1,28 @@
+---
+title: "Data 612 Discussion Assignment 4"
+author: "Stephen Haslett"
+date: "07/03/2020"
+output:
+  rmdformats::readthedown
+
+subtitle: 'Mitigating the Harm of Recommender Systems'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(rmdformats)
+```
+
+
+## Assignment Instructions
+Read one or more of the articles below and consider how to counter the radicalizing effects of recommender systems or ways to prevent algorithmic discrimination.
+
+Renee Diresta, Wired.com (2018): [Up Next: A Better Recommendation System](https://www.wired.com/story/creating-ethical-recommendation-engines).
+
+Zeynep Tufekci, The New York Times (2018): [YouTube, the Great Radicalizer](https://www.nytimes.com/2018/03/10/opinion/sunday/youtube-politics-radical.html).
+
+Sanjay Krishnan, Jay Patel, Michael J. Franklin, Ken Goldberg (n/a): [Social Influence Bias in Recommender Systems: A Methodology for Learning, Analyzing, and Mitigating Bias in Ratings](https://goldberg.berkeley.edu/pubs/sanjay-recsys-v10.pdf).
+
+## Discussion
+
+
