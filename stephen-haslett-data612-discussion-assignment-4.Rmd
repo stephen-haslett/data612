@@ -24,5 +24,4 @@ Zeynep Tufekci, The New York Times (2018): [YouTube, the Great Radicalizer](http
 Sanjay Krishnan, Jay Patel, Michael J. Franklin, Ken Goldberg (n/a): [Social Influence Bias in Recommender Systems: A Methodology for Learning, Analyzing, and Mitigating Bias in Ratings](https://goldberg.berkeley.edu/pubs/sanjay-recsys-v10.pdf).
 
 ## Discussion
-
-
+In her New York Time's article - "YouTube, the Great Radicalizer", Zeynep Tufekci talks about how YouTube's recommendation algorithms seem to always up the stakes in terms of the extremity of the content they recommend to users based on their search history. During the 2016 presidential election campaign, she discovered that watching videos of Donald Trump would often result in YouTube recommending far right content. She experimented watching non political content, and found the same pattern emerged; watching content about vegetarianism led to videos about veganism, and videos about jogging led to videos about running ultramarathons being recommended.
