@@ -17,11 +17,19 @@ library(rmdformats)
 ## Assignment Instructions
 Read one or more of the articles below and consider how to counter the radicalizing effects of recommender systems or ways to prevent algorithmic discrimination.
 
-Renee Diresta, Wired.com (2018): [Up Next: A Better Recommendation System](https://www.wired.com/story/creating-ethical-recommendation-engines).
-
-Zeynep Tufekci, The New York Times (2018): [YouTube, the Great Radicalizer](https://www.nytimes.com/2018/03/10/opinion/sunday/youtube-politics-radical.html).
-
-Sanjay Krishnan, Jay Patel, Michael J. Franklin, Ken Goldberg (n/a): [Social Influence Bias in Recommender Systems: A Methodology for Learning, Analyzing, and Mitigating Bias in Ratings](https://goldberg.berkeley.edu/pubs/sanjay-recsys-v10.pdf).
+- Renee Diresta, Wired.com (2018): [Up Next: A Better Recommendation System](https://www.wired.com/story/creating-ethical-recommendation-engines).
+- Zeynep Tufekci, The New York Times (2018): [YouTube, the Great Radicalizer](https://www.nytimes.com/2018/03/10/opinion/sunday/youtube-politics-radical.html).
+- Sanjay Krishnan, Jay Patel, Michael J. Franklin, Ken Goldberg (n/a): [Social Influence Bias in Recommender Systems: A Methodology for Learning, Analyzing, and Mitigating Bias in Ratings](https://goldberg.berkeley.edu/pubs/sanjay-recsys-v10.pdf).
 
 ## Discussion
-In her New York Time's article - "YouTube, the Great Radicalizer", Zeynep Tufekci talks about how YouTube's recommendation algorithms seem to always up the stakes in terms of the extremity of the content they recommend to users based on their search history. During the 2016 presidential election campaign, she discovered that watching videos of Donald Trump would often result in YouTube recommending far right content. She experimented watching non political content, and found the same pattern emerged; watching content about vegetarianism led to videos about veganism, and videos about jogging led to videos about running ultramarathons being recommended.
+In her New York Time's article - "YouTube, the Great Radicalizer", Zeynep Tufekci discusses how YouTube's recommendation algorithms seem to always up the stakes in terms of the extremity of the content they recommend to users based on a their viewing histories. During the 2016 presidential election campaign, she discovered that watching videos of Donald Trump would often result in YouTube recommending far right content.
+
+She experimented with watching non political content, and found the same pattern emerged; watching content about vegetarianism led to videos about veganism, and videos about jogging led to videos about running ultra-marathons being recommended.
+
+Renee Diresta’s Wired article, "Up Next: A Better Recommendation System" further consolidates Zeynep Tufekci's observations. In the article, she provides an example of Pinterest recommending far right content after visiting a Pinterest board of anti-Islamic memes for a research project that she was working on.
+
+In essence, both journalists have identified an inherent bias in the content recommender systems recommend. This content can draw users into a world of extremism, even though entering that world was not the users' intent.
+
+This issue is further exacerbated by the fact that recommender systems tend to wrap users in [filter bubbles](https://en.wikipedia.org/wiki/Filter_bubble). Eventually, the extreme content becomes the basis on which users form their opinions on world events which can lead to negative consequences, such as making ill-informed political decisions, or in the worst case, radicalization.
+
+## How to Mitigate The Problem
