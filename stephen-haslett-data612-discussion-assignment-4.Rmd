@@ -24,12 +24,17 @@ Read one or more of the articles below and consider how to counter the radicaliz
 ## Discussion
 In her New York Time's article - "YouTube, the Great Radicalizer", Zeynep Tufekci discusses how YouTube's recommendation algorithms seem to always up the stakes in terms of the extremity of the content they recommend to users based on a their viewing histories. During the 2016 presidential election campaign, she discovered that watching videos of Donald Trump would often result in YouTube recommending far right content.
 
-She experimented with watching non political content, and found the same pattern emerged; watching content about vegetarianism led to videos about veganism, and videos about jogging led to videos about running ultra-marathons being recommended.
+She later experimented with watching non political content, and found that the same pattern emerged; watching content about vegetarianism led to videos about veganism, and videos about jogging led to videos about running ultra-marathons being recommended.
 
 Renee Diresta’s Wired article, "Up Next: A Better Recommendation System" further consolidates Zeynep Tufekci's observations. In the article, she provides an example of Pinterest recommending far right content after visiting a Pinterest board of anti-Islamic memes for a research project that she was working on.
 
-In essence, both journalists have identified an inherent bias in the content recommender systems recommend. This content can draw users into a world of extremism, even though entering that world was not the users' intent.
+In essence, both journalists have identified an inherent bias in the content that recommender systems recommend. This content can draw users into a world of extremism, even though entering that world was not the users' intent.
 
-This issue is further exacerbated by the fact that recommender systems tend to wrap users in [filter bubbles](https://en.wikipedia.org/wiki/Filter_bubble). Eventually, the extreme content becomes the basis on which users form their opinions on world events which can lead to negative consequences, such as making ill-informed political decisions, or in the worst case, radicalization.
+The issue is further exacerbated by the fact that recommender systems tend to wrap users in [filter bubbles](https://en.wikipedia.org/wiki/Filter_bubble). Eventually, the extreme content becomes the basis on which users form their opinions on world events. This can lead to negative consequences, such as making ill-informed political decisions, or in the worst case, radicalization.
 
-## How to Mitigate The Problem
+## Mitigating The Problem
+A possible solution to this issue would be to provide users with the option of flagging unwanted recommendations. These flags could then be fed back to the recommendation algorithm to identify at what point, and on what basis, the system recommended the flagged content.
+
+Based on the findings of this process, adjustments could be made to the algorithm to prevent it from making such recommendations in the future. As more and more flagged content data is accrued, more patterns will be identified, allowing engineers to better refine the algorithm and increase the accuracy of the recommendation system. 
+
+Additionally, overtime, as the accrued data grows in size, additional algorithms could be created that focus on cleaning the flagged data itself (i.e. weeding out questionable flags etc.), thus further adding to the accuracy of the system.
