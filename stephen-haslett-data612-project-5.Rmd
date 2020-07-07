@@ -39,44 +39,60 @@ show(MovieLense)
 
 ## Non Distributed Recommender System
 
-Ratings are integer values ranging from 0 to 5. A zero value rating represents a missing value. As you can see from the below table,
-there are a lot of missing values so in the interest of keeping our data accurate, we can remove these.
-
-#### Remove empty rating values from the dataset.
-
-```{r, warning=FALSE, message=FALSE}
-ratings_vector <- as.vector(MovieLense@data)
-ratings_vector <- ratings_vector[ratings_vector != 0]
-ratings_table <- table(ratings_vector)
-ratings_table
-```
-
 ### select only users who have rated at least 50 movies, and movies that have been watched at least 100 times.
-
 ```{r, warning=FALSE, message=FALSE}
 movie_ratings <- MovieLense[rowCounts(MovieLense) > 50, colCounts(MovieLense) > 100]
 ```
 
 
-#### Build the ALS based model
+#### Build the RecommenderLab ALS based model
 ```{r, warning=FALSE, message=FALSE}
 e <- evaluationScheme(movie_ratings, method = 'split', train = 0.9, given = 15)
-als_model <- Recommender(getData(e, 'train'), method = 'ALS')
-als_model
+rec_als_model <- Recommender(getData(e, 'train'), method = 'ALS')
+rec_als_model
 ```
 
-### Apply the model to the test data and evaluate the models accuracy.
+### Perform predictions on the model and evaluate its accuracy.
 ```{r, warning=FALSE, message=FALSE}
-predicted <- predict(als_model, getData(e, 'known'), type = 'ratings')
-als_model_accuracy <- calcPredictionAccuracy(predicted, getData(e, 'unknown'))
-als_model_accuracy
+start <- Sys.time()
+predicted <- predict(rec_als_model, getData(e, 'known'), type = 'ratings')
+rec_als_model_accuracy <- calcPredictionAccuracy(predicted, getData(e, 'unknown'))
+rec_als_model_accuracy
+stop <-Sys.time()
+
+rec_time_taken <- stop - start
+rec_time_taken
 ```
 
 ## Distributed Recommender System
+
+#### Build the distributed ALS model and perform predictions
 ```{r, warning=FALSE, message=FALSE}
+distributed_data <- movie_ratings %>% as(. , 'data.frame') %>% mutate(user = as.numeric(user), item = as.numeric(item)) 
+
 # Open Spark connection.
 sc <- spark_connect(master = "local", version = '3.0.0')
+
+start <- Sys.time()
+
+# Copy data to Spark.
+spark_data <- sdf_copy_to(sc, distributed_data, 'sdf_rating_matrix', overwrite = TRUE)
+
+# Split the Spark data into testing and training sets and build the model.
+split_data <- spark_data %>% sdf_random_split(training = 0.9, testing = 0.2)
+distributed_als_model <- ml_als(split_data$training, max_iter = 5)
+
+# perform predictions.
+predicted <- ml_transform(distributed_als_model, split_data$testing) %>% collect()
+stop <-Sys.time()
+dis_time_taken <- stop - start
+dis_time_taken
 
 # Close Spark connection.
 spark_disconnect(sc)
 ```
+
+
+## Side by Side Performance Evaluation
+
+
