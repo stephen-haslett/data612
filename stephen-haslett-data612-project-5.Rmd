@@ -27,7 +27,7 @@ what point would you see moving to a distributed platform such as Spark becoming
 
 ## Introduction
 For this assignment, I adapted the MovieLense recommender system I created for project 2 to work with Apache Spark. I then compared the performance
-of the new distrbuted system with your previous project 2 iteration.
+of the new distributed system with the previous interation from project 2.
 
 ### Load the MovieLense Dataset
 The MovieLense dataset contains 943 users, and 1664 movies.
