@@ -1,0 +1,92 @@
+---
+title: "Data 612 Project 5 | Implementing a Recommender System on Spark"
+author: "Stephen Haslett"
+date: "7/06/2020"
+output:
+  rmdformats::readthedown
+
+subtitle: "Implementing a Recommender System on Spark"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(kableExtra)
+library(recommenderlab)
+library(sparklyr)
+library(ggplot2)
+library(rmdformats)
+```
+
+## Assignment Instructions
+Adapt one of your recommendation systems to work with Apache Spark and compare the performance with your previous iteration.
+Consider the efficiency of the system and the added complexity of using Spark.
+
+Please include in your conclusion: For your given recommender system’s data, algorithm(s), and (envisioned) implementation, at
+what point would you see moving to a distributed platform such as Spark becoming necessary?
+
+## Introduction
+For this assignment, I adapted the MovieLense recommender system I created for project 2 to work with Apache Spark. I then compared the performance
+of the new distrbuted system with your previous project 2 iteration.
+
+### Load the MovieLense Dataset
+The MovieLense dataset contains 943 users, and 1664 movies.
+```{r, warning=FALSE, message=FALSE}
+set.seed(150)
+data(MovieLense)
+show(MovieLense)
+```
+
+## Non Distributed Recommender System
+
+Ratings are integer values ranging from 0 to 5. A zero value rating represents a missing value. As you can see from the below table,
+there are a lot of missing values so in the interest of keeping our data accurate, we can remove these.
+
+#### Remove empty rating values from the dataset.
+
+```{r, warning=FALSE, message=FALSE}
+ratings_vector <- ratings_vector[ratings_vector != 0]
+ratings_table <- table(ratings_vector)
+ratings_table
+```
+
+### select only users who have rated at least 50 movies, and movies that have been watched at least 100 times.
+
+```{r, warning=FALSE, message=FALSE}
+movie_ratings <- MovieLense[rowCounts(MovieLense) > 50, colCounts(MovieLense) > 100]
+```
+
+#### Split the data into training and test sets
+```{r, warning=FALSE, message=FALSE}
+train <- sample(x = c(TRUE, FALSE), size = nrow(movie_ratings), replace = TRUE, prob = c(0.8, 0.2))
+training_data <- movie_ratings[train, ]
+test_data <- movie_ratings[!train, ]
+
+print(nrow(training_data))
+print(nrow(test_data))
+```
+
+#### Build the user based model
+```{r, warning=FALSE, message=FALSE}
+user_user_model <- Recommender(data = training_data, method = 'UBCF')
+user_user_model
+```
+
+### Apply the model to the test data.
+```{r, warning=FALSE, message=FALSE}
+predicted <- predict(object = user_user_model, newdata = test_data, n = 6)
+recommendation_matrix <- sapply(predicted@items, function(x) { colnames(movie_ratings)[x] })
+```
+
+## Model Evaluation
+To evaluate the models, I used the split method to calculate the Root Mean Square Error for both the user based model,
+and the item based model. As you can see from the below table, The RMSE for the user based model is lower than that of the item based
+model suggesting that it may be the more accurate of the two models.
+
+```{r, warning=FALSE, message=FALSE}
+e <- evaluationScheme(movie_ratings, method = 'split', train = 0.9, given = 15)
+ubcf <- Recommender(getData(e, 'train'), 'UBCF')
+
+predict_ubcf <- predict(ubcf, getData(e, 'known'), type = 'ratings')
+ubcf_error <- calcPredictionAccuracy(predict_ubcf, getData(e, 'unknown'))
+```
