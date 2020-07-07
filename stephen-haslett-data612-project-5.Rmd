@@ -33,7 +33,7 @@ recommenderlab package (the non-distributed system), and the other will be integ
 My goal is to then compare the performance of the 2 systems to assess the advantages that distributed systems hold over non-distributed systems.
 
 ## Data
-Here, we load the version of the MovieLense dataset that comes with the recommenderlab package. The dataset contains around 100,000 ratings
+Here, we load the version of the MovieLense dataset that comes with the recommenderlab package. The dataset contains 99,392 ratings
 from 943 users on 1664 movies.
 ```{r, warning=FALSE, message=FALSE}
 set.seed(150)
@@ -49,7 +49,7 @@ movie_ratings <- MovieLense[rowCounts(MovieLense) > 50, colCounts(MovieLense) > 
 
 ## Non Distributed Recommender System
 In this section we will build the non-distributed recommender system using recommenderlab. Here, we split the MovieLense data,
-fit the ALS model, perform predictions on the model, and lastly evaluate the accuracy of the model.
+fit the ALS model, perform predictions on the model, and lastly evaluate processing time, and the accuracy of the model.
 
 #### Build the RecommenderLab ALS based model
 ```{r, warning=FALSE, message=FALSE}
@@ -58,7 +58,7 @@ rec_als_model <- Recommender(getData(e, 'train'), method = 'ALS')
 rec_als_model
 ```
 
-### Perform predictions on the model and evaluate its accuracy.
+#### Perform predictions on the model, and evaluate processing time and accuracy
 ```{r, warning=FALSE, message=FALSE}
 start <- Sys.time()
 predicted <- predict(rec_als_model, getData(e, 'known'), type = 'ratings')
@@ -108,7 +108,7 @@ spark_disconnect(sc)
 ## Side by Side Performance Evaluation
 To evaluate the performance of the models, we will compare the time it took for each model to complete processing, and compare the RMSE of the models.
 
-### Processing time comparision
+#### Processing time comparision
 
 ```{r, warning=FALSE, message=FALSE}
 processing_time <- rbind(rec_time_taken, dis_time_taken)
@@ -121,7 +121,7 @@ knitr::kable(processing_time, format = 'html') %>%
   add_header_above(c('Model Processing Time Comparision' = 2))
 ```
 
-### RMSE comparision
+#### RMSE comparision
 
 ```{r, warning=FALSE, message=FALSE}
 # Get the RMSE from the RecommenderLab model. RecommenderLabs "calcPredictionAccuracy()" function takes
@@ -147,6 +147,6 @@ knitr::kable(rmses, format = 'html') %>%
 ## Conclusion
 In terms of processing time, our distributed model holds a considerable edge over the non-distributed model. It took the distributed model over 10 seconds to process the data, were as the distributed model completed processing in just under 3 seconds. Our dataset is relatively small, but it proves that distributed systems hold a clear advantage over their non-distributed counterparts when it comes to processing large datasets.
 
-Additionally, the RMSE for the distributed model is much better than that of the non-distributed model. This again suggests that the distributed model is the better choice when it comes to prediction errors.
+The RMSE for the distributed model is marginally better than that of the non-distributed model. However, I believe that with larger datasets, this edge would scale up, suggesting that the distributed model may be a better choice when it comes to prediction errors.
 
-Given the above findings, I believe moving to a distributed platform would become necessary when processing larger datasets. This is especially true when memory is limited. The advantage of using a distributed system in these circumstances is that processes can be split up and distributed over numerous data nodes. This prevents the system from crashing when memory runs out which is exactly what would happen if we went with the non-distributed model to process a large dataset.
+Given the above findings, I believe moving to a distributed platform would become necessary when processing larger datasets. This is especially true when memory is limited. The advantage of using a distributed system in these circumstances is that processes can be split up and distributed over numerous data nodes. This prevents the system from crashing when memory runs out, which is exactly what would happen if we went with the non-distributed model to process a large dataset.
