@@ -16,6 +16,7 @@ library(recommenderlab)
 library(sparklyr)
 library(ggplot2)
 library(rmdformats)
+library(Metrics)
 ```
 
 ## Assignment Instructions
@@ -29,6 +30,8 @@ what point would you see moving to a distributed platform such as Spark becoming
 For this assignment, I adapted the MovieLense recommender system I created for project 2 to work with Apache Spark. I then compared the performance
 of the new distributed system with the previous interation from project 2.
 
+## Data Manipulation
+
 ### Load the MovieLense Dataset
 The MovieLense dataset contains 943 users, and 1664 movies.
 ```{r, warning=FALSE, message=FALSE}
@@ -37,13 +40,13 @@ data(MovieLense)
 show(MovieLense)
 ```
 
-## Non Distributed Recommender System
-
-### select only users who have rated at least 50 movies, and movies that have been watched at least 100 times.
+### Select only users who have rated at least 50 movies, and movies that have been watched at least 100 times.
 ```{r, warning=FALSE, message=FALSE}
 movie_ratings <- MovieLense[rowCounts(MovieLense) > 50, colCounts(MovieLense) > 100]
 ```
 
+
+## Non Distributed Recommender System
 
 #### Build the RecommenderLab ALS based model
 ```{r, warning=FALSE, message=FALSE}
@@ -94,5 +97,41 @@ spark_disconnect(sc)
 
 
 ## Side by Side Performance Evaluation
+To evaluate the performance of the models, I will compare the time it took for each model to complete processing, and also compare their RMSE.
+
+### Processing time comparision
+
+
+### RMSE comparision
+
+```{r, warning=FALSE, message=FALSE}
+# Get the RMSE from the RecommenderLab model. RecommenderLabs "calcPredictionAccuracy()" function takes
+# care of calculating this for us, so we just need to fetch the value.
+rec_rmse <- rec_als_model_accuracy[[1]]
+
+# For the distributed model, we need to calcuate the RMSE ourselves. The Metrics package provides us
+# with the rmse() function to take care of this task.
+dis_rmse <- rmse(predicted$rating, predicted$prediction)
+
+
+rmses <- rbind(rec_rmse, dis_rmse)
+
+rownames(rmses) <- c('RecommenderLab Model','Distributed Model')
+colnames(rmses) <- c('RMSE')
+
+knitr::kable(rmses, format = 'html') %>%
+  kableExtra::kable_styling(bootstrap_options = c('striped', 'hover')) %>% 
+  add_header_above(c('Model RMSE Comparison' = 2))
+```
+
+
+
+
+
+
+
+
+
+
 
 
