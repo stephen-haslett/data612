@@ -27,26 +27,29 @@ Please include in your conclusion: For your given recommender system’s data, a
 what point would you see moving to a distributed platform such as Spark becoming necessary?
 
 ## Introduction
-For this assignment, I adapted the MovieLense recommender system I created for project 2 to work with Apache Spark. I then compared the performance
-of the new distributed system with the previous interation from project 2.
+For this assignment, we will create 2 ALS recommender systems based on the MovieLense dataset. One system will be created using the
+recommenderlab package (the non-distributed system), and the other will be integrated with Spark using the sparklyr package (the distributed system).
 
-## Data Manipulation
+My goal is to then compare the performance of the 2 systems to assess the advantages that distributed systems hold over non-distributed systems.
 
-### Load the MovieLense Dataset
-The MovieLense dataset contains 943 users, and 1664 movies.
+## Data
+Here, we load the version of the MovieLense dataset that comes with the recommenderlab package. The dataset contains around 100,000 ratings
+from 943 users on 1664 movies.
 ```{r, warning=FALSE, message=FALSE}
 set.seed(150)
 data(MovieLense)
 show(MovieLense)
 ```
 
-### Select only users who have rated at least 50 movies, and movies that have been watched at least 100 times.
+After loading the data, we select only users who have rated at least 50 movies, and movies that have been watched at least 100 times.
 ```{r, warning=FALSE, message=FALSE}
 movie_ratings <- MovieLense[rowCounts(MovieLense) > 50, colCounts(MovieLense) > 100]
 ```
 
 
 ## Non Distributed Recommender System
+In this section we will build the non-distributed recommender system using recommenderlab. Here, we split the MovieLense data,
+fit the ALS model, perform predictions on the model, and lastly evaluate the accuracy of the model.
 
 #### Build the RecommenderLab ALS based model
 ```{r, warning=FALSE, message=FALSE}
@@ -68,9 +71,17 @@ rec_time_taken
 ```
 
 ## Distributed Recommender System
+In this section we will build the distributed recommender system using the sparklyr package to integrate the system with Spark.
+
+Here, we firstly transform the data into a format that is agreeable with Spark, and then connect with Spark so that we can copy the
+data over to Spark as an object.
+
+Next we split the data in Spark, and then fit the ALS model. Finally, we make our predictions and monitor
+the amount of time it takes Spark to complete processing the data.
 
 #### Build the distributed ALS model and perform predictions
 ```{r, warning=FALSE, message=FALSE}
+# Transform the data.
 distributed_data <- movie_ratings %>% as(. , 'data.frame') %>% mutate(user = as.numeric(user), item = as.numeric(item)) 
 
 # Open Spark connection.
@@ -95,7 +106,7 @@ spark_disconnect(sc)
 
 
 ## Side by Side Performance Evaluation
-To evaluate the performance of the models, I will compare the time it took for each model to complete processing, and also compare their RMSE.
+To evaluate the performance of the models, we will compare the time it took for each model to complete processing, and also compare the RMSE of both models.
 
 ### Processing time comparision
 
