@@ -59,9 +59,9 @@ rec_als_model
 ```{r, warning=FALSE, message=FALSE}
 start <- Sys.time()
 predicted <- predict(rec_als_model, getData(e, 'known'), type = 'ratings')
+stop <-Sys.time()
 rec_als_model_accuracy <- calcPredictionAccuracy(predicted, getData(e, 'unknown'))
 rec_als_model_accuracy
-stop <-Sys.time()
 
 rec_time_taken <- stop - start
 rec_time_taken
@@ -76,8 +76,6 @@ distributed_data <- movie_ratings %>% as(. , 'data.frame') %>% mutate(user = as.
 # Open Spark connection.
 sc <- spark_connect(master = "local", version = '3.0.0')
 
-start <- Sys.time()
-
 # Copy data to Spark.
 spark_data <- sdf_copy_to(sc, distributed_data, 'sdf_rating_matrix', overwrite = TRUE)
 
@@ -86,6 +84,7 @@ split_data <- spark_data %>% sdf_random_split(training = 0.9, testing = 0.2)
 distributed_als_model <- ml_als(split_data$training, max_iter = 5)
 
 # perform predictions.
+start <- Sys.time()
 predicted <- ml_transform(distributed_als_model, split_data$testing) %>% collect()
 stop <-Sys.time()
 dis_time_taken <- stop - start
