@@ -89,7 +89,6 @@ distributed_als_model <- ml_als(split_data$training, max_iter = 5)
 predicted <- ml_transform(distributed_als_model, split_data$testing) %>% collect()
 stop <-Sys.time()
 dis_time_taken <- stop - start
-dis_time_taken
 
 # Close Spark connection.
 spark_disconnect(sc)
@@ -101,6 +100,16 @@ To evaluate the performance of the models, I will compare the time it took for e
 
 ### Processing time comparision
 
+```{r, warning=FALSE, message=FALSE}
+processing_time <- rbind(rec_time_taken, dis_time_taken)
+
+rownames(processing_time) <- c('RecommenderLab Model','Distributed Model')
+colnames(processing_time) <- c('Processing Time')
+
+knitr::kable(processing_time, format = 'html') %>%
+  kableExtra::kable_styling(bootstrap_options = c('striped', 'hover')) %>% 
+  add_header_above(c('Model Processing Time Comparision' = 2))
+```
 
 ### RMSE comparision
 
