@@ -106,7 +106,7 @@ spark_disconnect(sc)
 
 
 ## Side by Side Performance Evaluation
-To evaluate the performance of the models, we will compare the time it took for each model to complete processing, and also compare the RMSE of both models.
+To evaluate the performance of the models, we will compare the time it took for each model to complete processing, and compare the RMSE of the models.
 
 ### Processing time comparision
 
@@ -144,13 +144,9 @@ knitr::kable(rmses, format = 'html') %>%
 ```
 
 
+## Conclusion
+In terms of processing time, our distributed model holds a considerable edge over the non-distributed model. It took the distributed model over 10 seconds to process the data, were as the distributed model completed processing in just under 3 seconds. Our dataset is relatively small, but it proves that distributed systems hold a clear advantage over their non-distributed counterparts when it comes to processing large datasets.
 
+Additionally, the RMSE for the distributed model is much better than that of the non-distributed model. This again suggests that the distributed model is the better choice when it comes to prediction errors.
 
-
-
-
-
-
-
-
-
+Given the above findings, I believe moving to a distributed platform would become necessary when processing larger datasets. This is especially true when memory is limited. The advantage of using a distributed system in these circumstances is that processes can be split up and distributed over numerous data nodes. This prevents the system from crashing when memory runs out which is exactly what would happen if we went with the non-distributed model to process a large dataset.
