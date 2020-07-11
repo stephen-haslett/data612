@@ -4,8 +4,6 @@ author: "Stephen Haslett"
 date: "07/09/2020"
 output:
   html_document:
-    toc: true
-    toc_float: true
     theme: cosmo
 
 subtitle: 'Amazon Ratings Recommender System'
@@ -24,3 +22,9 @@ The dataset I will use for this project is the [*Amazon - Ratings (Beauty Produc
 dataset which is available on [Kaggle](https://www.kaggle.com). This dataset is a compact version of the original Amazon dataset and consists of over 2 million
 Amazon reviews and ratings on Beauty related products. The original Amazon dataset contains 142.8 million reviews spanning from May 1996, to July 2014. The version
 of the dataset that I will use contains 4 columns: ___UserId, ProductId, Rating, and Timestamp___.
+
+## Project Objective
+My objective for this project is to create a recommendation system that recommends Amazon beauty products to users based on previous ratings.
+Due to the fact that the dataset for this project is considerably larger than those of previous projects, I will leverage Spark to store the data.
+In order to integrate Spark with R, I will utilize the R *sparklyr* package. In terms of the recommendation model, I plan to utilize the
+Alternating Least Square (ALS) matrix factorization algorithm.
