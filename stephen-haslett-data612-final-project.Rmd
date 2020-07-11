@@ -1,0 +1,19 @@
+---
+title: "DATA 612 Final Project"
+author: "Stephen Haslett"
+date: "07/10/2020"
+output:
+  html_document:
+    theme: cosmo
+
+subtitle: 'Amazon Beauty Products Recommender System'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Assignment Instructions
+Build out the system that you describe in your final project planning document.
+
