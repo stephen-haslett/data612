@@ -11,9 +11,43 @@ subtitle: 'Amazon Beauty Products Recommender System'
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(data.table)
+library(sparklyr)
+library(dplyr)
 ```
 
 
 ## Assignment Instructions
-Build out the system that you describe in your final project planning document.
+Build out the system that you described in your final project planning document.
+
+## Data Manipulation
+
+### Pull in the dataset from GitHub
+```{r, message=FALSE, warning=FALSE}
+# Import the dataset CSV file from GitHub.
+amazon_ratings_csv <- 'https://raw.githubusercontent.com/stephen-haslett/data612/612-final-project/amazon_beauty_ratings.csv'
+amazon_ratings <- read.csv(amazon_ratings_csv, stringsAsFactors = FALSE) 
+head(amazon_ratings)
+```
+
+### Remove the Timestamp column as we don't need it.
+```{r, message=FALSE, warning=FALSE}
+amazon_ratings$Timestamp <- NULL
+colnames(amazon_ratings) <- c('UserId', 'ProductId', 'Rating')
+head(amazon_ratings)
+```
+
+
+## Copy the data over to Spark.
+```{r, message=FALSE, warning=FALSE}
+# Connect to Spark and copy over the dataset.
+sc <- spark_connect(master = 'local', version = '3.0.0')
+product_ratings <- sdf_copy_to(sc, amazon_ratings, overwrite = TRUE)
+
+# Split the data into test and training sets.
+split_data <- product_ratings %>% sdf_random_split(training = 0.9, testing = 0.2)
+```
+
+
+
 
