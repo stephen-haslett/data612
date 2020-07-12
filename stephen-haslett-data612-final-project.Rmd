@@ -41,7 +41,7 @@ head(amazon_magazine_ratings, 100)
 ### Remove the columns that we don't need.
 ```{r, message=FALSE, warning=FALSE}
 
-metadata_refined <- select(amazon_magazine_metadata, asin, brand, title)
+metadata_refined <- select(amazon_magazine_metadata, asin, title)
 # We only want items that have titles.
 metadata_refined <- metadata_refined[!is.na(metadata_refined$title),]
 
