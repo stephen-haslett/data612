@@ -6,7 +6,7 @@ output:
   html_document:
     theme: cosmo
 
-subtitle: 'Amazon Beauty Products Recommender System'
+subtitle: 'Amazon Magazine Subscriptions Recommender System'
 ---
 
 ```{r setup, include=FALSE}
@@ -14,6 +14,9 @@ knitr::opts_chunk$set(echo = TRUE)
 library(data.table)
 library(sparklyr)
 library(dplyr)
+library(plyr)
+library(RCurl)
+library(jsonlite)
 ```
 
 
@@ -22,19 +25,35 @@ Build out the system that you described in your final project planning document.
 
 ## Data Manipulation
 
-### Pull in the dataset from GitHub
+### Pull in the datasets from GitHub
 ```{r, message=FALSE, warning=FALSE}
-# Import the dataset CSV file from GitHub.
-amazon_ratings_csv <- 'https://raw.githubusercontent.com/stephen-haslett/data612/612-final-project/amazon_beauty_ratings.csv'
-amazon_ratings <- read.csv(amazon_ratings_csv, stringsAsFactors = FALSE) 
-head(amazon_ratings)
+# Import the Json data from GitHub.
+amazon_meta_source <- url('https://raw.githubusercontent.com/stephen-haslett/data612/612-final-project/amazon_magazine_meta.json')
+amazon_ratings_source <- url('https://raw.githubusercontent.com/stephen-haslett/data612/612-final-project/amazon_magazine_ratings.json')
+
+amazon_magazine_metadata <- do.call(rbind, lapply(paste(readLines(amazon_meta_source, warn = FALSE), collapse = ''), jsonlite::fromJSON))
+amazon_magazine_ratings <- do.call(rbind, lapply(paste(readLines(amazon_ratings_source, warn = FALSE), collapse = ''), jsonlite::fromJSON))
+
+head(amazon_magazine_metadata, 100)
+head(amazon_magazine_ratings, 100)
 ```
 
-### Remove the Timestamp column as we don't need it.
+### Remove the columns that we don't need.
 ```{r, message=FALSE, warning=FALSE}
-amazon_ratings$Timestamp <- NULL
-colnames(amazon_ratings) <- c('UserId', 'ProductId', 'Rating')
-head(amazon_ratings)
+
+metadata_refined <- select(amazon_magazine_metadata, asin, brand, title)
+# We only want items that have titles.
+metadata_refined <- metadata_refined[!is.na(metadata_refined$title),]
+
+ratings_refined <- select(amazon_magazine_ratings, asin, reviewerID, reviewerName, overall)
+
+```
+
+
+### Join the 2 tables together.
+```{r, message=FALSE, warning=FALSE}
+magazine_ratings <- join(ratings_refined, metadata_refined, by = 'asin', type = 'right')
+head(magazine_ratings, 1000)
 ```
 
 
@@ -42,10 +61,10 @@ head(amazon_ratings)
 ```{r, message=FALSE, warning=FALSE}
 # Connect to Spark and copy over the dataset.
 sc <- spark_connect(master = 'local', version = '3.0.0')
-product_ratings <- sdf_copy_to(sc, amazon_ratings, overwrite = TRUE)
+ratings <- sdf_copy_to(sc, magazine_ratings, overwrite = TRUE)
 
 # Split the data into test and training sets.
-split_data <- product_ratings %>% sdf_random_split(training = 0.9, testing = 0.2)
+split_data <- ratings %>% sdf_random_split(training = 0.9, testing = 0.2)
 ```
 
 
