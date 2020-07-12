@@ -46,25 +46,32 @@ metadata_refined <- select(amazon_magazine_metadata, asin, title)
 metadata_refined <- metadata_refined[!is.na(metadata_refined$title),]
 
 ratings_refined <- select(amazon_magazine_ratings, asin, reviewerID, reviewerName, overall)
-
 ```
 
 
 ### Join the 2 tables together.
 ```{r, message=FALSE, warning=FALSE}
 magazine_ratings <- join(ratings_refined, metadata_refined, by = 'asin', type = 'right')
-head(magazine_ratings, 1000)
+
+# Rename the 'overall' column name to 'rating'.
+names(magazine_ratings)[4] <- "rating"
+
+head(magazine_ratings)
 ```
 
 
 ## Copy the data over to Spark.
+The dataset is too large for my local machine to handle, so I had to reduce the number of records to send over to Spark.
 ```{r, message=FALSE, warning=FALSE}
+# Select the first 2000 records from the dataset to accommodate for limited resources on my local machine. 
+magazine_ratings <- head(magazine_ratings, 2000)
 # Connect to Spark and copy over the dataset.
 sc <- spark_connect(master = 'local', version = '3.0.0')
 ratings <- sdf_copy_to(sc, magazine_ratings, overwrite = TRUE)
 
+
 # Split the data into test and training sets.
-split_data <- ratings %>% sdf_random_split(training = 0.9, testing = 0.2)
+split_data <- ratings %>% sdf_random_split(training = 0.75, testing = 0.25)
 ```
 
 
