@@ -58,9 +58,16 @@ magazine_ratings <- join(ratings_refined, metadata_refined, by = 'asin', type = 
 # characters from the reviewerID, so that we are left with only numeric characters.
 magazine_ratings$reviewerID <- as.numeric(gsub("[^0-9.-]", "", magazine_ratings$reviewerID))
 
-# Rename the 'overall' column name to 'rating'.
-names(magazine_ratings)[4] <- "rating"
-head(magazine_ratings, '2000')
+# Remove rows that are missing reviewerID values.
+magazine_ratings <- magazine_ratings[!is.na(magazine_ratings$reviewerID),]
+
+# Rename table column names to be more descriptive.
+names(magazine_ratings)[1] <- 'item'
+names(magazine_ratings)[2] <- 'user_id'
+names(magazine_ratings)[3] <- 'user_name'
+names(magazine_ratings)[4] <- 'rating'
+head(magazine_ratings, 2000)
+
 ```
 
 
@@ -83,7 +90,7 @@ test <- partition$test
 
 ## Create the Alternating Least Squares (ALS) model.
 ```{r, message=FALSE, warning=FALSE}
-als_model <- ml_als(training, rating.column = 'rating', user.column = 'reviewerID', item.column = 'title', regularization.parameter = 0.01)
+als_model <- ml_als(training, rating.column = 'rating', user.column = 'user_id', item.column = 'item', regularization.parameter = 0.01)
 
 summary(als_model)
 ```
