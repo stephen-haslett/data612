@@ -98,12 +98,18 @@ test <- partition$test
 
 ## Create the Alternating Least Squares (ALS) model.
 ```{r, message=FALSE, warning=FALSE}
-als_model <- ml_als(training, rating_col = 'rating', user_col = 'user_id', item_col = 'item_id')
-
+als_model <- ml_als(training, rating_col = 'rating', user_col = 'user_id', item_col = 'item_id', cold_start_strategy = 'drop')
 summary(als_model)
 ```
 
+## Perform predictions.
+```{r, message=FALSE, warning=FALSE}
+predictions <- als_model$.jobj %>%
+  invoke('transform', spark_dataframe(test)) %>%
+  collect()
 
+predictions
+```
 
 
 
