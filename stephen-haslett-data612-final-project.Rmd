@@ -53,26 +53,42 @@ ratings_refined <- select(amazon_magazine_ratings, asin, reviewerID, reviewerNam
 ```{r, message=FALSE, warning=FALSE}
 magazine_ratings <- join(ratings_refined, metadata_refined, by = 'asin', type = 'right')
 
+# reviewerIDs are alphanumeric. When we create the model, we use sparklyr's "ml_als()" function. The
+# 'user_col' parameter of this function must be an integer, so we need to strip out the alphabetic
+# characters from the reviewerID, so that we are left with only numeric characters.
+magazine_ratings$reviewerID <- as.numeric(gsub("[^0-9.-]", "", magazine_ratings$reviewerID))
+
 # Rename the 'overall' column name to 'rating'.
 names(magazine_ratings)[4] <- "rating"
-
-head(magazine_ratings)
+head(magazine_ratings, '2000')
 ```
 
 
 ## Copy the data over to Spark.
 The dataset is too large for my local machine to handle, so I had to reduce the number of records to send over to Spark.
 ```{r, message=FALSE, warning=FALSE}
-# Select the first 2000 records from the dataset to accommodate for limited resources on my local machine. 
+# Select the first 2000 records from the dataset to accommodate for limited resources on my local machine.
 magazine_ratings <- head(magazine_ratings, 2000)
+
 # Connect to Spark and copy over the dataset.
 sc <- spark_connect(master = 'local', version = '3.0.0')
 ratings <- sdf_copy_to(sc, magazine_ratings, overwrite = TRUE)
 
-
 # Split the data into test and training sets.
-split_data <- ratings %>% sdf_random_split(training = 0.75, testing = 0.25)
+partition <- ratings %>%  sdf_partition(training = 0.75, test = 0.25, seed = 1099)
+training <- partition$training
+test <- partition$test
 ```
+
+
+## Create the Alternating Least Squares (ALS) model.
+```{r, message=FALSE, warning=FALSE}
+als_model <- ml_als(training, rating.column = 'rating', user.column = 'reviewerID', item.column = 'title', regularization.parameter = 0.01)
+
+summary(als_model)
+```
+
+
 
 
 
