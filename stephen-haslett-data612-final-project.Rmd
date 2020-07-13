@@ -53,20 +53,28 @@ ratings_refined <- select(amazon_magazine_ratings, asin, reviewerID, reviewerNam
 ```{r, message=FALSE, warning=FALSE}
 magazine_ratings <- join(ratings_refined, metadata_refined, by = 'asin', type = 'right')
 
-# reviewerIDs are alphanumeric. When we create the model, we use sparklyr's "ml_als()" function. The
-# 'user_col' parameter of this function must be an integer, so we need to strip out the alphabetic
-# characters from the reviewerID, so that we are left with only numeric characters.
-magazine_ratings$reviewerID <- as.numeric(gsub("[^0-9.-]", "", magazine_ratings$reviewerID))
-
 # Remove rows that are missing reviewerID values.
 magazine_ratings <- magazine_ratings[!is.na(magazine_ratings$reviewerID),]
 
-# Rename table column names to be more descriptive.
-names(magazine_ratings)[1] <- 'item'
+# Rename column names to make them more descriptive.
+names(magazine_ratings)[1] <- 'item_id'
 names(magazine_ratings)[2] <- 'user_id'
 names(magazine_ratings)[3] <- 'user_name'
 names(magazine_ratings)[4] <- 'rating'
-head(magazine_ratings, 2000)
+names(magazine_ratings)[5] <- 'item_name'
+
+# item_ids and user_ids are alphanumeric. When we create the model, we use sparklyr's "ml_als()" function. The
+# function's 'user_col' and 'item_col' parameter values must be integers, so we need to convert these to
+# integer values.
+item_factor <-as.factor(magazine_ratings$item_id)
+item_id <- as.integer(item_factor)
+magazine_ratings$item_id <- item_id
+
+user_factor <- as.factor(magazine_ratings$user_id)
+user_id <- as.integer(user_factor)
+magazine_ratings$user_id <- user_id
+
+head(magazine_ratings, 100)
 
 ```
 
@@ -90,7 +98,7 @@ test <- partition$test
 
 ## Create the Alternating Least Squares (ALS) model.
 ```{r, message=FALSE, warning=FALSE}
-als_model <- ml_als(training, rating.column = 'rating', user.column = 'user_id', item.column = 'item', regularization.parameter = 0.01)
+als_model <- ml_als(training, rating_col = 'rating', user_col = 'user_id', item_col = 'item_id')
 
 summary(als_model)
 ```
