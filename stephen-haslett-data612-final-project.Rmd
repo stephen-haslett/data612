@@ -41,6 +41,7 @@ As noted in the introduction section above, I will use the Amazon Magazine Subsc
 ## Data Manipulation
 
 ### Pull in the datasets from GitHub
+In order to make the json data files accessable outside of the confines of my local machine, I will store them in Github, and then ingest them using the jsonlite package.
 ```{r, message=FALSE, warning=FALSE}
 # Import the Json data from GitHub.
 amazon_meta_source <- url('https://raw.githubusercontent.com/stephen-haslett/data612/612-final-project/amazon_magazine_meta.json')
@@ -48,10 +49,18 @@ amazon_ratings_source <- url('https://raw.githubusercontent.com/stephen-haslett/
 
 amazon_magazine_metadata <- do.call(rbind, lapply(paste(readLines(amazon_meta_source, warn = FALSE), collapse = ''), jsonlite::fromJSON))
 amazon_magazine_ratings <- do.call(rbind, lapply(paste(readLines(amazon_ratings_source, warn = FALSE), collapse = ''), jsonlite::fromJSON))
-
-head(amazon_magazine_metadata, 100)
-head(amazon_magazine_ratings, 100)
 ```
+
+Take a look at the column names for the metadata set.
+```{r, message=FALSE, warning=FALSE}
+head(amazon_magazine_metadata, 1)
+```
+
+Do the same for the ratings set.
+```{r, message=FALSE, warning=FALSE}
+head(amazon_magazine_ratings, 1)
+```
+
 
 ### Remove the columns that we don't need.
 ```{r, message=FALSE, warning=FALSE}
