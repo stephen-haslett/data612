@@ -17,11 +17,26 @@ library(dplyr)
 library(plyr)
 library(RCurl)
 library(jsonlite)
+library(knitr)
+library(kableExtra)
 ```
 
 
 ## Assignment Instructions
 Build out the system that you described in your final project planning document.
+
+## Introduction
+My original objective for this project was to create a recommendation system that predicted Amazon beauty product ratings. However, the compact version of the [*Amazon - Ratings (Beauty Products)*](https://www.kaggle.com/skillsmuggler/amazon-ratings) dataset (*Available from [Kaggle](https://www.kaggle.com)*) was missing metadata, and thus it did not contain the names of the beauty products.
+
+I attempted to get around this issue by using the full version of the dataset (*Available from [UCSD](http://deepyeti.ucsd.edu/jianmo/amazon/index.html)*) that contained the metadata that I needed, but the files were too large to run locally. This forced me to go with a smaller dataset (Amazon Magazine Subscription Ratings) that was small enough to run locally, and also contained the metadata that I needed.
+
+## Project Objective
+The objective of this project is to build a recommendation system that predicts magazine subscription ratings. The dataset for this project is considerably larger than those of previous projects, so I will leverage Spark to store the data. In order to integrate Spark with R, I will utilize the R *sparklyr* package. For the recommendation model, I will use the
+Alternating Least Square (ALS) matrix factorization algorithm.
+
+## Data Source
+As noted in the introduction section above, I will use the Amazon Magazine Subscription Ratings dataset made available by the University of California San Diego. The dataset was compiled in 2018, and is split into 2 json files - a reviews file, and a metadata file. The reviews file contains 89,689 magazine subscription reviews, and the metadata file contains 3,493 products.
+
 
 ## Data Manipulation
 
