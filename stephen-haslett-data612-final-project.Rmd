@@ -51,29 +51,37 @@ amazon_magazine_metadata <- do.call(rbind, lapply(paste(readLines(amazon_meta_so
 amazon_magazine_ratings <- do.call(rbind, lapply(paste(readLines(amazon_ratings_source, warn = FALSE), collapse = ''), jsonlite::fromJSON))
 ```
 
-Take a look at the column names for the metadata set.
+### Explore the dataset column names.
+Metadata column names.
 ```{r, message=FALSE, warning=FALSE}
-head(amazon_magazine_metadata, 1)
+names(amazon_magazine_metadata)
 ```
 
-Do the same for the ratings set.
+Ratings column names.
 ```{r, message=FALSE, warning=FALSE}
-head(amazon_magazine_ratings, 1)
+names(amazon_magazine_ratings)
 ```
 
 
 ### Remove the columns that we don't need.
+There are quite a few columns in the datasets that we do not need. The only columns that we are interested in from the metadata set are
+the 'asin' (product ID), and the 'title' (product name) columns, so we can remove all the other columns. The same goes for the ratings set;
+we only need the asin, reviewerID, reviewerName, and overall (rating) columns.
 ```{r, message=FALSE, warning=FALSE}
-
+# Select the columns we need from the metadata dataset.
 metadata_refined <- select(amazon_magazine_metadata, asin, title)
-# We only want items that have titles.
+# We only want items that have product titles, so remove all the rows that do not have a title.
 metadata_refined <- metadata_refined[!is.na(metadata_refined$title),]
 
+# Select the columns we need from the metadata dataset.
 ratings_refined <- select(amazon_magazine_ratings, asin, reviewerID, reviewerName, overall)
 ```
 
 
-### Join the 2 tables together.
+### Combine the metadata and ratings datasets.
+Now that we have the columns that we need from both datasets, we can combine the dataset using a join. Both sets share the asin column,
+so we can perform the join using the 'asin' column. This will leave us with a table that contains both the user review data, and the item ids
+and product names. 
 ```{r, message=FALSE, warning=FALSE}
 magazine_ratings <- join(ratings_refined, metadata_refined, by = 'asin', type = 'right')
 
@@ -86,10 +94,13 @@ names(magazine_ratings)[2] <- 'user_id'
 names(magazine_ratings)[3] <- 'user_name'
 names(magazine_ratings)[4] <- 'rating'
 names(magazine_ratings)[5] <- 'item_name'
+```
 
-# item_ids and user_ids are alphanumeric. When we create the model, we use sparklyr's "ml_als()" function. The
-# function's 'user_col' and 'item_col' parameter values must be integers, so we need to convert these to
-# integer values.
+### Convert the item IDs and user IDs to numeric values.
+The item_ids and user_ids are alphanumeric. When we create the model, we use sparklyr's "ml_als()" function. The
+function's 'user_col' and 'item_col' parameter values must be integers, so we need to convert these to
+integer values. To achieve this, we will first convert these values to factors, so that we can then convert them to integers. 
+```{r, message=FALSE, warning=FALSE}
 item_factor <-as.factor(magazine_ratings$item_id)
 item_id <- as.integer(item_factor)
 magazine_ratings$item_id <- item_id
@@ -98,13 +109,14 @@ user_factor <- as.factor(magazine_ratings$user_id)
 user_id <- as.integer(user_factor)
 magazine_ratings$user_id <- user_id
 
-head(magazine_ratings, 100)
-
+head(magazine_ratings, 10)
 ```
 
 
 ## Copy the data over to Spark.
-The dataset is too large for my local machine to handle, so I had to reduce the number of records to send over to Spark.
+Now that we have a table that contains only the values that we need, we can copy the data over to Spark.
+Because The dataset is too large for my local machine to handle, we need to reduce the number of records to send over to Spark.
+To accomplish this, we will select the first 2000 records.
 ```{r, message=FALSE, warning=FALSE}
 # Select the first 2000 records from the dataset to accommodate for limited resources on my local machine.
 magazine_ratings <- head(magazine_ratings, 2000)
@@ -112,8 +124,13 @@ magazine_ratings <- head(magazine_ratings, 2000)
 # Connect to Spark and copy over the dataset.
 sc <- spark_connect(master = 'local', version = '3.0.0')
 ratings <- sdf_copy_to(sc, magazine_ratings, overwrite = TRUE)
+```
 
-# Split the data into test and training sets.
+
+## Split the data into test and training sets.
+Now that the data is in Spark, we can split the dataset into test and training sets using a ratio of 70:25
+(70% of the entire dataset for training, and 25% for testing). 
+```{r, message=FALSE, warning=FALSE}
 partition <- ratings %>%  sdf_partition(training = 0.75, test = 0.25, seed = 1099)
 training <- partition$training
 test <- partition$test
@@ -134,7 +151,3 @@ predictions <- als_model$.jobj %>%
 
 predictions
 ```
-
-
-
-
