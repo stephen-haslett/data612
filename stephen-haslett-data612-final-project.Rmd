@@ -19,6 +19,7 @@ library(RCurl)
 library(jsonlite)
 library(knitr)
 library(kableExtra)
+library(ggplot2)
 ```
 
 
@@ -119,6 +120,31 @@ knitr::kable(head(magazine_ratings, 10), format = 'html') %>%
 ```
 
 
+## Data Analysis
+With the alterations to our dataset complete, we are now in a position to do a brief analysis of our data.
+
+### Distribution of ratings
+As we can see from the below bar plot, the majority of magazine subscriptions were given high ratings.    
+
+
+
+```{r, message=FALSE, warning=FALSE}
+magazine_ratings %>% 
+  ggplot(aes(rating)) +
+  geom_bar() +
+  labs(title = "Distribution of Ratings", y = "", x = "Ratings") +
+  theme_minimal()
+```
+
+```{r, message=FALSE, warning=FALSE}
+magazine_ratings %>% 
+  group_by(item_id) %>% 
+  add_tally() %>% 
+  ggplot(aes(n)) +
+  geom_histogram(bins = 10) +
+  labs(title = "Distribution of Ratings per Subscription", y = "", x = "") +
+  theme_minimal()
+```
 ## Copy the data over to Spark.
 Now that we have a table that contains only the values that we need, we can copy the data over to Spark.
 Because The dataset was too large for my local machine to handle, I needed to reduce the number of records to send over to Spark.
@@ -144,6 +170,9 @@ test <- partition$test
 
 
 ## Create the Alternating Least Squares (ALS) model.
+To create the ALS model, I used the Sparklyr's ml_als() function. After running my predictions, I found that a lot of predictions had NaN values, which is less than ideal.
+Thankfully, the ml_als() function provides a useful parameter that takes care of this issue - "cold_start_strategy". Setting this parameter to "drop" removes rows containing
+Nan prediction values from the dataframe.   
 ```{r, message=FALSE, warning=FALSE}
 als_model <- ml_als(training, rating_col = 'rating', user_col = 'user_id', item_col = 'item_id', cold_start_strategy = 'drop')
 
@@ -162,3 +191,6 @@ knitr::kable(predictions, format = 'html') %>%
   kableExtra::kable_styling(bootstrap_options = c('striped', 'hover'), fixed_thead = T) %>% 
   add_header_above(c('Prediction Results' = 6))
 ```
+
+
+## Conclusion
