@@ -42,7 +42,7 @@ As noted in the introduction section above, I will use the Amazon Magazine Subsc
 ## Data Manipulation
 
 ### Pull in the datasets from GitHub
-In order to make the json data files accessable outside of the confines of my local machine, I will store them in Github, and then ingest them using the jsonlite package.
+In order to make the json data files accessible outside of the confines of my local machine, I will store them in Github, and then ingest them using the jsonlite package.
 ```{r, message=FALSE, warning=FALSE}
 # Import the Json data from GitHub.
 amazon_meta_source <- url('https://raw.githubusercontent.com/stephen-haslett/data612/612-final-project/amazon_magazine_meta.json')
@@ -56,14 +56,14 @@ amazon_magazine_ratings <- do.call(rbind, lapply(paste(readLines(amazon_ratings_
 Metadata column names.
 ```{r, message=FALSE, warning=FALSE}
 knitr::kable(names(amazon_magazine_metadata), format = 'html') %>%
-  kableExtra::kable_styling(bootstrap_options = c('striped', 'hover')) %>% 
+  kableExtra::kable_styling(bootstrap_options = c('striped', 'hover')) %>%
   add_header_above(c('Metadata Column Names' = 1))
 ```
 
 Ratings column names.
 ```{r, message=FALSE, warning=FALSE}
 knitr::kable(names(amazon_magazine_ratings), format = 'html') %>%
-  kableExtra::kable_styling(bootstrap_options = c('striped', 'hover')) %>% 
+  kableExtra::kable_styling(bootstrap_options = c('striped', 'hover')) %>%
   add_header_above(c('Ratings Column Names' = 1))
 ```
 
@@ -104,7 +104,7 @@ names(magazine_ratings)[5] <- 'item_name'
 ### Convert the item IDs and user IDs to numeric values.
 The item_ids and user_ids are alphanumeric. When we create the model, we use sparklyr's "ml_als()" function. The
 function's 'user_col' and 'item_col' parameter values must be integers, so we need to convert these to
-integer values. To achieve this, we will first convert these values to factors, so that we can then convert them to integers. 
+integer values. To achieve this, we will first convert these values to factors, so that we can then convert them to integers.
 ```{r, message=FALSE, warning=FALSE}
 item_factor <-as.factor(magazine_ratings$item_id)
 item_id <- as.integer(item_factor)
@@ -115,7 +115,7 @@ user_id <- as.integer(user_factor)
 magazine_ratings$user_id <- user_id
 
 knitr::kable(head(magazine_ratings, 10), format = 'html') %>%
-  kableExtra::kable_styling(bootstrap_options = c('striped', 'hover')) %>% 
+  kableExtra::kable_styling(bootstrap_options = c('striped', 'hover')) %>%
   add_header_above(c('Refined Ratings Dataset with Numeric Item and User IDs' = 5))
 ```
 
@@ -148,7 +148,7 @@ ratings <- sdf_copy_to(sc, magazine_ratings, overwrite = TRUE)
 
 ## Split the data into test and training sets.
 Now that the data is in Spark, we can split the dataset into test and training sets using a ratio of 70:25
-(70% of the entire dataset for training, and 25% for testing). 
+(70% of the entire dataset for training, and 25% for testing).
 ```{r, message=FALSE, warning=FALSE}
 partition <- ratings %>%  sdf_partition(training = 0.75, test = 0.25, seed = 1099)
 training <- partition$training
@@ -159,12 +159,12 @@ test <- partition$test
 ## Create the Alternating Least Squares (ALS) model.
 To create the ALS model, I used the Sparklyr's ml_als() function. After running my predictions, I found that a lot of predictions had NaN values, which is less than ideal.
 Thankfully, the ml_als() function provides a useful parameter that takes care of this issue - "cold_start_strategy". Setting this parameter to "drop" removes rows containing
-Nan prediction values from the dataframe.   
+Nan prediction values from the dataframe.
 ```{r, message=FALSE, warning=FALSE}
-als_model <- ml_als(training, rating_col = 'rating', user_col = 'user_id', item_col = 'item_id', cold_start_strategy = 'drop')
+als_model <- ml_als(training, rating_col = 'rating', user_col = 'user_id', item_col = 'item_id', cold_start_strategy = 'drop', max_iter = 4)
 
 knitr::kable(summary(als_model), format = 'html') %>%
-  kableExtra::kable_styling(bootstrap_options = c('striped', 'hover')) %>% 
+  kableExtra::kable_styling(bootstrap_options = c('striped', 'hover')) %>%
   add_header_above(c('ALS Model Summary' = 4))
 ```
 
@@ -175,9 +175,16 @@ predictions <- als_model$.jobj %>%
   collect()
 
 knitr::kable(predictions, format = 'html') %>%
-  kableExtra::kable_styling(bootstrap_options = c('striped', 'hover'), fixed_thead = T) %>% 
+  kableExtra::kable_styling(bootstrap_options = c('striped', 'hover'), fixed_thead = T) %>%
   add_header_above(c('Prediction Results' = 6))
 ```
 
 
 ## Conclusion
+In this project, we built a recommendation system using the ALS model, and an Amazon magazine ratings dataset. The first challenge was with the dataset. The dataset came in 2 separate files, one file contained the ratings, and the other contained the product metadata. Due to the fact that we needed the product names (which were contained in the metadata file), as well as the user ratings, we needed to join the data based on a column that was common to both sets. Both sets contained the 'asin' (product ID) column, so we were able to join on this column.
+
+The next challenge with the dataset was the fact that the product IDs and user IDs were alphanumeric, and the function that we used to create the model only accepts numeric values for these parameters. To get around this issue, we needed to convert these values to numeric values. Alphanumeric character cannot be directly converted to numeric values, so we first had to convert them to factors, and then to numeric values. This allowed us to build the model using Sparklyr's ml_als() function.
+
+Additionally, running Spark locally proved to be problematic. Due to limited computational resources, I had to greatly reduce the size of the dataset in order for the model to run. Given more time, I would have liked to have ran Spark via Amazon EMR.
+
+Finally, The recommender system is missing a UI. With more time, I would have liked to have built a UI that allowed users to interact with the system in order to get magazine subscription recommendation. My plan was to use Shiny for this purpose, but I am not familiar with setting up UIs using Shiny, and did not have the time to experiment with it.
