@@ -120,31 +120,18 @@ knitr::kable(head(magazine_ratings, 10), format = 'html') %>%
 ```
 
 
-## Data Analysis
-With the alterations to our dataset complete, we are now in a position to do a brief analysis of our data.
-
-### Distribution of ratings
-As we can see from the below bar plot, the majority of magazine subscriptions were given high ratings.    
-
-
-
+## Distribution of Ratings
+With the alterations to our dataset complete, we are now in a position to take a look at the ratings distribution.
+As we can see from the below bar plot, the majority of magazine subscriptions were given high ratings, with fewer items being
+given low ratings. 
 ```{r, message=FALSE, warning=FALSE}
 magazine_ratings %>% 
   ggplot(aes(rating)) +
-  geom_bar() +
-  labs(title = "Distribution of Ratings", y = "", x = "Ratings") +
+  geom_bar(fill = 'darkgreen') +
+  labs(title = 'Distribution of Ratings', y = 'Frequency', x = 'Ratings') +
   theme_minimal()
 ```
 
-```{r, message=FALSE, warning=FALSE}
-magazine_ratings %>% 
-  group_by(item_id) %>% 
-  add_tally() %>% 
-  ggplot(aes(n)) +
-  geom_histogram(bins = 10) +
-  labs(title = "Distribution of Ratings per Subscription", y = "", x = "") +
-  theme_minimal()
-```
 ## Copy the data over to Spark.
 Now that we have a table that contains only the values that we need, we can copy the data over to Spark.
 Because The dataset was too large for my local machine to handle, I needed to reduce the number of records to send over to Spark.
