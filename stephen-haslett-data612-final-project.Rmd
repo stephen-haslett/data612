@@ -54,12 +54,16 @@ amazon_magazine_ratings <- do.call(rbind, lapply(paste(readLines(amazon_ratings_
 ### Explore the dataset column names.
 Metadata column names.
 ```{r, message=FALSE, warning=FALSE}
-names(amazon_magazine_metadata)
+knitr::kable(names(amazon_magazine_metadata), format = 'html') %>%
+  kableExtra::kable_styling(bootstrap_options = c('striped', 'hover')) %>% 
+  add_header_above(c('Metadata Column Names' = 1))
 ```
 
 Ratings column names.
 ```{r, message=FALSE, warning=FALSE}
-names(amazon_magazine_ratings)
+knitr::kable(names(amazon_magazine_ratings), format = 'html') %>%
+  kableExtra::kable_styling(bootstrap_options = c('striped', 'hover')) %>% 
+  add_header_above(c('Ratings Column Names' = 1))
 ```
 
 
@@ -109,14 +113,16 @@ user_factor <- as.factor(magazine_ratings$user_id)
 user_id <- as.integer(user_factor)
 magazine_ratings$user_id <- user_id
 
-head(magazine_ratings, 10)
+knitr::kable(head(magazine_ratings, 10), format = 'html') %>%
+  kableExtra::kable_styling(bootstrap_options = c('striped', 'hover')) %>% 
+  add_header_above(c('Refined Ratings Dataset with Numeric Item and User IDs' = 5))
 ```
 
 
 ## Copy the data over to Spark.
 Now that we have a table that contains only the values that we need, we can copy the data over to Spark.
-Because The dataset is too large for my local machine to handle, we need to reduce the number of records to send over to Spark.
-To accomplish this, we will select the first 2000 records.
+Because The dataset was too large for my local machine to handle, I needed to reduce the number of records to send over to Spark.
+To accomplish this, I selected the first 2000 records.
 ```{r, message=FALSE, warning=FALSE}
 # Select the first 2000 records from the dataset to accommodate for limited resources on my local machine.
 magazine_ratings <- head(magazine_ratings, 2000)
@@ -140,14 +146,19 @@ test <- partition$test
 ## Create the Alternating Least Squares (ALS) model.
 ```{r, message=FALSE, warning=FALSE}
 als_model <- ml_als(training, rating_col = 'rating', user_col = 'user_id', item_col = 'item_id', cold_start_strategy = 'drop')
-summary(als_model)
+
+knitr::kable(summary(als_model), format = 'html') %>%
+  kableExtra::kable_styling(bootstrap_options = c('striped', 'hover')) %>% 
+  add_header_above(c('ALS Model Summary' = 4))
 ```
 
-## Perform predictions.
+## Perform predictions on the data.
 ```{r, message=FALSE, warning=FALSE}
 predictions <- als_model$.jobj %>%
   invoke('transform', spark_dataframe(test)) %>%
   collect()
 
-predictions
+knitr::kable(predictions, format = 'html') %>%
+  kableExtra::kable_styling(bootstrap_options = c('striped', 'hover'), fixed_thead = T) %>% 
+  add_header_above(c('Prediction Results' = 6))
 ```
