@@ -13,8 +13,8 @@ subtitle: 'Amazon Magazine Subscriptions Recommender System'
 knitr::opts_chunk$set(echo = TRUE)
 library(data.table)
 library(sparklyr)
-library(dplyr)
 library(plyr)
+library(dplyr)
 library(RCurl)
 library(jsonlite)
 library(knitr)
@@ -161,7 +161,7 @@ To create the ALS model, I used the Sparklyr's ml_als() function. After running 
 Thankfully, the ml_als() function provides a useful parameter that takes care of this issue - "cold_start_strategy". Setting this parameter to "drop" removes rows containing
 Nan prediction values from the dataframe.
 ```{r, message=FALSE, warning=FALSE}
-als_model <- ml_als(training, rating_col = 'rating', user_col = 'user_id', item_col = 'item_id', cold_start_strategy = 'drop', max_iter = 4)
+als_model <- ml_als(training, rating_col = 'rating', user_col = 'user_id', item_col = 'item_id', cold_start_strategy = 'drop')
 
 knitr::kable(summary(als_model), format = 'html') %>%
   kableExtra::kable_styling(bootstrap_options = c('striped', 'hover')) %>%
@@ -174,7 +174,7 @@ predictions <- als_model$.jobj %>%
   invoke('transform', spark_dataframe(test)) %>%
   collect()
 
-knitr::kable(predictions, format = 'html') %>%
+knitr::kable(head(predictions, 50), format = 'html') %>%
   kableExtra::kable_styling(bootstrap_options = c('striped', 'hover'), fixed_thead = T) %>%
   add_header_above(c('Prediction Results' = 6))
 ```
